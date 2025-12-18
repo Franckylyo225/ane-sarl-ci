@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Mail, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import logoAne from "@/assets/logo-ane.png";
 
 const navigation = [
   { name: "Accueil", href: "#accueil" },
@@ -29,11 +30,11 @@ export function Header() {
       <div className="hidden lg:block bg-primary text-primary-foreground py-2">
         <div className="container-custom flex items-center justify-between text-sm">
           <div className="flex items-center gap-6">
-            <a href="tel:+22527222831 15" className="flex items-center gap-2 hover:text-copper transition-colors">
+            <a href="tel:+22527222831 15" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Phone size={14} />
               <span>+225 27 22 28 31 15</span>
             </a>
-            <a href="mailto:info@ane.ci" className="flex items-center gap-2 hover:text-copper transition-colors">
+            <a href="mailto:info@ane.ci" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Mail size={14} />
               <span>info@ane.ci</span>
             </a>
@@ -57,18 +58,12 @@ export function Header() {
         <div className="container-custom">
           <nav className="flex items-center justify-between">
             {/* Logo */}
-            <a href="#accueil" className="flex items-center gap-3 group">
-              <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center shadow-premium group-hover:shadow-premium-lg transition-shadow">
-                <span className="text-primary-foreground font-display font-bold text-xl">A</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-display font-bold text-xl text-foreground tracking-tight">
-                  ANE <span className="text-copper">SARL</span>
-                </span>
-                <span className="text-[10px] text-muted-foreground uppercase tracking-widest">
-                  Aménagement & Expertise
-                </span>
-              </div>
+            <a href="#accueil" className="flex items-center group">
+              <img 
+                src={logoAne} 
+                alt="ANE SARL - Aménagement Nature Environnement" 
+                className="h-12 md:h-14 w-auto transition-transform group-hover:scale-105"
+              />
             </a>
 
             {/* Desktop Navigation */}
