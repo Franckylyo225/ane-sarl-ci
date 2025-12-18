@@ -61,18 +61,13 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        forest: {
-          DEFAULT: "hsl(var(--primary))",
-          dark: "hsl(var(--forest-dark))",
-          light: "hsl(var(--forest-light))",
-        },
-        copper: {
-          DEFAULT: "hsl(var(--copper))",
-          light: "hsl(var(--copper-light))",
-        },
-        cream: {
-          DEFAULT: "hsl(var(--cream))",
-          dark: "hsl(var(--cream-dark))",
+        ane: {
+          green: "hsl(var(--ane-green))",
+          "green-dark": "hsl(var(--ane-green-dark))",
+          "green-light": "hsl(var(--ane-green-light))",
+          gray: "hsl(var(--ane-gray))",
+          "gray-dark": "hsl(var(--ane-gray-dark))",
+          "gray-light": "hsl(var(--ane-gray-light))",
         },
       },
       borderRadius: {
