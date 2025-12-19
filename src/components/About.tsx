@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Award, Users, Target, ArrowRight } from "lucide-react";
 import aboutImage from "@/assets/about-team.jpg";
+import { useScrollReveal, useScrollRevealMultiple } from "@/hooks/useScrollReveal";
 
 const values = [
   {
@@ -21,6 +22,10 @@ const values = [
 ];
 
 export function About() {
+  const imageReveal = useScrollReveal({ threshold: 0.2 });
+  const contentReveal = useScrollReveal({ threshold: 0.2 });
+  const { setRef, visibleItems } = useScrollRevealMultiple(values.length, { threshold: 0.2 });
+
   return (
     <section id="apropos" className="section-padding bg-secondary relative overflow-hidden">
       {/* Decorative elements */}
@@ -30,7 +35,10 @@ export function About() {
       <div className="container-custom relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-16">
           {/* Image */}
-          <div className="relative order-2 lg:order-1">
+          <div 
+            ref={imageReveal.ref}
+            className={`relative order-2 lg:order-1 scroll-reveal-left ${imageReveal.isVisible ? "visible" : ""}`}
+          >
             <div className="relative rounded-2xl overflow-hidden shadow-premium-lg">
               <img
                 src={aboutImage}
@@ -50,7 +58,10 @@ export function About() {
           </div>
 
           {/* Content */}
-          <div className="order-1 lg:order-2">
+          <div 
+            ref={contentReveal.ref}
+            className={`order-1 lg:order-2 scroll-reveal-right ${contentReveal.isVisible ? "visible" : ""}`}
+          >
             <span className="inline-block text-copper font-semibold text-sm uppercase tracking-widest mb-4">
               À propos de nous
             </span>
@@ -81,7 +92,11 @@ export function About() {
           {values.map((value, index) => (
             <div
               key={index}
-              className="bg-card backdrop-blur-sm border border-border rounded-xl p-6 hover:border-copper/30 transition-all duration-300 shadow-premium group"
+              ref={setRef(index)}
+              className={`bg-card backdrop-blur-sm border border-border rounded-xl p-6 hover:border-copper/30 transition-all duration-300 shadow-premium group scroll-reveal ${
+                visibleItems[index] ? "visible" : ""
+              }`}
+              style={{ transitionDelay: `${index * 150}ms` }}
             >
               <div className="flex items-start gap-4">
                 <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-copper/20 transition-colors">

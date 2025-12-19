@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Quote, ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const testimonials = [
   {
@@ -33,6 +34,8 @@ const testimonials = [
 
 export function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const headerReveal = useScrollReveal({ threshold: 0.2 });
+  const cardReveal = useScrollReveal({ threshold: 0.2 });
 
   const nextTestimonial = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
@@ -46,7 +49,10 @@ export function Testimonials() {
     <section className="section-padding bg-secondary">
       <div className="container-custom">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div 
+          ref={headerReveal.ref}
+          className={`text-center max-w-3xl mx-auto mb-16 scroll-reveal ${headerReveal.isVisible ? "visible" : ""}`}
+        >
           <span className="inline-block text-copper font-semibold text-sm uppercase tracking-widest mb-4">
             Témoignages
           </span>
@@ -60,7 +66,10 @@ export function Testimonials() {
         </div>
 
         {/* Testimonial Carousel */}
-        <div className="max-w-4xl mx-auto">
+        <div 
+          ref={cardReveal.ref}
+          className={`max-w-4xl mx-auto scroll-reveal-scale ${cardReveal.isVisible ? "visible" : ""}`}
+        >
           <div className="relative bg-card rounded-2xl shadow-premium-lg p-8 md:p-12">
             {/* Quote icon */}
             <div className="absolute -top-6 left-8 w-12 h-12 bg-copper rounded-xl flex items-center justify-center shadow-lg">

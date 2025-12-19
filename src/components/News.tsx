@@ -1,5 +1,6 @@
 import { Calendar, ArrowRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useScrollReveal, useScrollRevealMultiple } from "@/hooks/useScrollReveal";
 
 const articles = [
   {
@@ -32,11 +33,17 @@ const articles = [
 ];
 
 export function News() {
+  const headerReveal = useScrollReveal({ threshold: 0.2 });
+  const { setRef, visibleItems } = useScrollRevealMultiple(articles.length, { threshold: 0.15 });
+
   return (
     <section id="actualites" className="section-padding bg-background">
       <div className="container-custom">
         {/* Section Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
+        <div 
+          ref={headerReveal.ref}
+          className={`flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12 scroll-reveal ${headerReveal.isVisible ? "visible" : ""}`}
+        >
           <div>
             <span className="inline-block text-primary font-semibold tracking-wider uppercase text-sm mb-3">
               Actualités
@@ -56,10 +63,14 @@ export function News() {
 
         {/* Articles Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {articles.map((article) => (
+          {articles.map((article, index) => (
             <article
               key={article.id}
-              className="group bg-card rounded-2xl overflow-hidden border border-border hover:border-primary/30 hover:shadow-xl transition-all duration-500"
+              ref={setRef(index)}
+              className={`group bg-card rounded-2xl overflow-hidden border border-border hover:border-primary/30 hover:shadow-xl transition-all duration-500 scroll-reveal ${
+                visibleItems[index] ? "visible" : ""
+              }`}
+              style={{ transitionDelay: `${index * 150}ms` }}
             >
               {/* Image */}
               <div className="relative h-52 overflow-hidden">

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ExternalLink, MapPin } from "lucide-react";
+import { useScrollReveal, useScrollRevealMultiple } from "@/hooks/useScrollReveal";
 
 const projects = [
   {
@@ -39,6 +40,9 @@ const categories = ["Tous", "Forestier", "Foncier", "BTP"];
 
 export function Projects() {
   const [activeCategory, setActiveCategory] = useState("Tous");
+  const headerReveal = useScrollReveal({ threshold: 0.2 });
+  const { setRef, visibleItems } = useScrollRevealMultiple(projects.length, { threshold: 0.15 });
+  const ctaReveal = useScrollReveal({ threshold: 0.3 });
 
   const filteredProjects = activeCategory === "Tous" 
     ? projects 
@@ -48,7 +52,10 @@ export function Projects() {
     <section id="projets" className="section-padding bg-background">
       <div className="container-custom">
         {/* Section Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
+        <div 
+          ref={headerReveal.ref}
+          className={`flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12 scroll-reveal ${headerReveal.isVisible ? "visible" : ""}`}
+        >
           <div>
             <span className="inline-block text-copper font-semibold text-sm uppercase tracking-widest mb-4">
               Portfolio
@@ -78,10 +85,14 @@ export function Projects() {
 
         {/* Projects Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project) => (
+          {filteredProjects.map((project, index) => (
             <div
               key={project.id}
-              className="group bg-card rounded-2xl overflow-hidden shadow-premium card-hover"
+              ref={setRef(index)}
+              className={`group bg-card rounded-2xl overflow-hidden shadow-premium card-hover scroll-reveal ${
+                visibleItems[index] ? "visible" : ""
+              }`}
+              style={{ transitionDelay: `${index * 150}ms` }}
             >
               {/* Image */}
               <div className="relative h-56 overflow-hidden">
@@ -137,7 +148,10 @@ export function Projects() {
         </div>
 
         {/* View All CTA */}
-        <div className="text-center mt-12">
+        <div 
+          ref={ctaReveal.ref}
+          className={`text-center mt-12 scroll-reveal-scale ${ctaReveal.isVisible ? "visible" : ""}`}
+        >
           <Button variant="outline" size="lg">
             Voir tous nos projets
             <ArrowRight className="w-5 h-5" />

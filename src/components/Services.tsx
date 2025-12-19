@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useScrollReveal, useScrollRevealMultiple } from "@/hooks/useScrollReveal";
 
 const services = [
   {
@@ -56,11 +57,18 @@ const services = [
 ];
 
 export function Services() {
+  const headerReveal = useScrollReveal({ threshold: 0.2 });
+  const { setRef, visibleItems } = useScrollRevealMultiple(services.length, { threshold: 0.15 });
+  const ctaReveal = useScrollReveal({ threshold: 0.3 });
+
   return (
     <section id="services" className="section-padding bg-primary text-primary-foreground">
       <div className="container-custom">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div 
+          ref={headerReveal.ref}
+          className={`text-center max-w-3xl mx-auto mb-16 scroll-reveal ${headerReveal.isVisible ? "visible" : ""}`}
+        >
           <span className="inline-block text-primary-foreground/80 font-semibold text-sm uppercase tracking-widest mb-4">
             Nos expertises
           </span>
@@ -79,7 +87,11 @@ export function Services() {
           {services.map((service, index) => (
             <div
               key={index}
-              className="group bg-secondary rounded-2xl p-8 border border-border/20 hover:shadow-lg hover:border-primary/30 transition-all duration-300"
+              ref={setRef(index)}
+              className={`group bg-secondary rounded-2xl p-8 border border-border/20 hover:shadow-lg hover:border-primary/30 transition-all duration-300 scroll-reveal ${
+                visibleItems[index] ? "visible" : ""
+              }`}
+              style={{ transitionDelay: `${index * 100}ms` }}
             >
               {/* Icon */}
               <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
@@ -119,7 +131,10 @@ export function Services() {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-12">
+        <div 
+          ref={ctaReveal.ref}
+          className={`text-center mt-12 scroll-reveal-scale ${ctaReveal.isVisible ? "visible" : ""}`}
+        >
           <Link to="/contact">
             <Button variant="hero" size="lg">
               Demander un devis gratuit
