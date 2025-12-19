@@ -50,18 +50,18 @@ const services = [
 
 export function Services() {
   return (
-    <section id="services" className="section-padding bg-secondary">
+    <section id="services" className="section-padding bg-primary text-primary-foreground">
       <div className="container-custom">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="inline-block text-copper font-semibold text-sm uppercase tracking-widest mb-4">
             Nos expertises
           </span>
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
             Des solutions complètes pour vos{" "}
-            <span className="text-primary">projets d'aménagement</span>
+            <span className="text-copper">projets d'aménagement</span>
           </h2>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-primary-foreground/80 text-lg">
             Découvrez notre gamme complète de services professionnels, 
             conçus pour répondre à tous vos besoins en aménagement foncier et forestier.
           </p>
@@ -72,18 +72,18 @@ export function Services() {
           {services.map((service, index) => (
             <div
               key={index}
-              className="group bg-card rounded-2xl p-8 shadow-premium card-hover border border-transparent hover:border-copper/20"
+              className="group bg-primary-foreground/5 backdrop-blur-sm rounded-2xl p-8 border border-primary-foreground/10 hover:bg-primary-foreground/10 hover:border-copper/30 transition-all duration-300"
             >
               {/* Icon */}
-              <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-copper/10 transition-colors">
-                <service.icon className="w-7 h-7 text-primary group-hover:text-copper transition-colors" />
+              <div className="w-14 h-14 bg-copper/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-copper/30 transition-colors">
+                <service.icon className="w-7 h-7 text-copper" />
               </div>
 
               {/* Content */}
-              <h3 className="font-display text-xl font-bold text-foreground mb-3">
+              <h3 className="font-display text-xl font-bold mb-3">
                 {service.title}
               </h3>
-              <p className="text-muted-foreground mb-6 line-clamp-3">
+              <p className="text-primary-foreground/70 mb-6 line-clamp-3">
                 {service.description}
               </p>
 
@@ -92,7 +92,7 @@ export function Services() {
                 {service.features.map((feature, idx) => (
                   <span
                     key={idx}
-                    className="text-xs font-medium px-3 py-1 bg-muted rounded-full text-muted-foreground"
+                    className="text-xs font-medium px-3 py-1 bg-primary-foreground/10 rounded-full text-primary-foreground/80"
                   >
                     {feature}
                   </span>
@@ -102,7 +102,7 @@ export function Services() {
               {/* Link */}
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 text-primary font-medium group-hover:text-copper transition-colors"
+                className="inline-flex items-center gap-2 text-copper font-medium hover:text-copper/80 transition-colors"
               >
                 En savoir plus
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -113,7 +113,7 @@ export function Services() {
 
         {/* CTA */}
         <div className="text-center mt-12">
-          <Button variant="premium" size="lg">
+          <Button variant="hero" size="lg">
             Demander un devis gratuit
             <ArrowRight className="w-5 h-5" />
           </Button>
