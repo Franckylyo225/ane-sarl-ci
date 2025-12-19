@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { 
   Facebook, 
   Linkedin, 
@@ -10,11 +11,11 @@ import {
 } from "lucide-react";
 
 const quickLinks = [
-  { name: "Accueil", href: "#accueil" },
-  { name: "Services", href: "#services" },
-  { name: "Projets", href: "#projets" },
-  { name: "À propos", href: "#apropos" },
-  { name: "Contact", href: "#contact" },
+  { name: "Accueil", href: "/" },
+  { name: "Services", href: "/services" },
+  { name: "Projets", href: "/projets" },
+  { name: "À propos", href: "/a-propos" },
+  { name: "Contact", href: "/contact" },
 ];
 
 const services = [
@@ -80,12 +81,12 @@ export function Footer() {
             <ul className="space-y-3">
               {quickLinks.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     className="text-primary-foreground/70 hover:text-copper transition-colors"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
