@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Award, Users, Target, ArrowRight } from "lucide-react";
+import { Award, Users, Target, ArrowRight } from "lucide-react";
+import aboutImage from "@/assets/about-team.jpg";
 
 const values = [
   {
@@ -19,13 +20,6 @@ const values = [
   },
 ];
 
-const milestones = [
-  { year: "1998", event: "Création de ANE SARL" },
-  { year: "2005", event: "Premier grand projet forestier national" },
-  { year: "2015", event: "Extension des services BTP et Géomatique" },
-  { year: "2020", event: "Projet phare : 72 forêts classées" },
-];
-
 export function About() {
   return (
     <section id="apropos" className="section-padding bg-primary text-primary-foreground relative overflow-hidden">
@@ -34,9 +28,29 @@ export function About() {
       <div className="absolute bottom-0 left-0 w-72 h-72 bg-primary-foreground/5 rounded-full blur-3xl" />
 
       <div className="container-custom relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-16">
+          {/* Image */}
+          <div className="relative order-2 lg:order-1">
+            <div className="relative rounded-2xl overflow-hidden shadow-premium-lg">
+              <img
+                src={aboutImage}
+                alt="Expert ANE SARL"
+                className="w-full h-[500px] object-cover object-top"
+              />
+              {/* Overlay gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-transparent" />
+            </div>
+            {/* Decorative frame */}
+            <div className="absolute -bottom-4 -right-4 w-full h-full border-2 border-copper/30 rounded-2xl -z-10" />
+            {/* Stats badge */}
+            <div className="absolute -bottom-6 -left-6 bg-copper text-primary-foreground px-6 py-4 rounded-xl shadow-premium">
+              <div className="text-3xl font-bold font-display">25+</div>
+              <div className="text-sm opacity-90">Années d'expérience</div>
+            </div>
+          </div>
+
           {/* Content */}
-          <div>
+          <div className="order-1 lg:order-2">
             <span className="inline-block text-copper font-semibold text-sm uppercase tracking-widest mb-4">
               À propos de nous
             </span>
@@ -44,7 +58,7 @@ export function About() {
               Expert en aménagement,{" "}
               <span className="text-copper">artisan de votre succès</span>
             </h2>
-            <p className="text-primary-foreground/80 text-lg mb-8 leading-relaxed">
+            <p className="text-primary-foreground/80 text-lg mb-6 leading-relaxed">
               Notre mission est de valoriser et de transformer les espaces fonciers et forestiers 
               en solutions durables et harmonieuses, en alliant innovation, respect de l'environnement 
               et satisfaction client.
@@ -55,64 +69,31 @@ export function About() {
               des ressources naturelles.
             </p>
 
-            {/* Key points */}
-            <div className="space-y-4 mb-8">
-              {[
-                "Plus de 25 ans d'expérience terrain",
-                "Équipe pluridisciplinaire d'experts",
-                "Partenaire de confiance de l'État",
-                "Engagement environnemental fort",
-              ].map((point, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-copper flex-shrink-0" />
-                  <span className="text-primary-foreground/90">{point}</span>
-                </div>
-              ))}
-            </div>
-
             <Button variant="hero" size="lg">
               Découvrir notre histoire
               <ArrowRight className="w-5 h-5" />
             </Button>
           </div>
+        </div>
 
-          {/* Values & Timeline */}
-          <div className="space-y-8">
-            {/* Values */}
-            <div className="grid gap-4">
-              {values.map((value, index) => (
-                <div
-                  key={index}
-                  className="bg-primary-foreground/5 backdrop-blur-sm border border-primary-foreground/10 rounded-xl p-6 hover:bg-primary-foreground/10 transition-colors"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-copper/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <value.icon className="w-6 h-6 text-copper" />
-                    </div>
-                    <div>
-                      <h3 className="font-display text-lg font-bold mb-2">{value.title}</h3>
-                      <p className="text-primary-foreground/70 text-sm">{value.description}</p>
-                    </div>
-                  </div>
+        {/* Values - Now at the bottom */}
+        <div className="grid md:grid-cols-3 gap-6">
+          {values.map((value, index) => (
+            <div
+              key={index}
+              className="bg-primary-foreground/5 backdrop-blur-sm border border-primary-foreground/10 rounded-xl p-6 hover:bg-primary-foreground/10 transition-all duration-300 hover:border-copper/30 group"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-14 h-14 bg-copper/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-copper/30 transition-colors">
+                  <value.icon className="w-7 h-7 text-copper" />
                 </div>
-              ))}
-            </div>
-
-            {/* Timeline */}
-            <div className="bg-primary-foreground/5 backdrop-blur-sm border border-primary-foreground/10 rounded-xl p-6">
-              <h3 className="font-display text-lg font-bold mb-6">Notre parcours</h3>
-              <div className="space-y-4">
-                {milestones.map((milestone, index) => (
-                  <div key={index} className="flex items-center gap-4">
-                    <div className="w-16 h-8 bg-copper/20 rounded flex items-center justify-center">
-                      <span className="text-copper font-bold text-sm">{milestone.year}</span>
-                    </div>
-                    <span className="text-primary-foreground/80 text-sm">{milestone.event}</span>
-                  </div>
-                ))}
+                <div>
+                  <h3 className="font-display text-xl font-bold mb-2">{value.title}</h3>
+                  <p className="text-primary-foreground/70 text-sm leading-relaxed">{value.description}</p>
+                </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
