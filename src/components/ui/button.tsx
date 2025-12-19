@@ -9,17 +9,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-forest-light shadow-premium hover:shadow-premium-lg",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-premium hover:shadow-premium-lg",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline: "border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-primary-foreground",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         // Premium variants for ANE SARL
-        hero: "bg-accent text-accent-foreground hover:brightness-110 shadow-lg hover:shadow-glow font-semibold tracking-wide",
-        "hero-outline": "border-2 border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 backdrop-blur-sm",
-        premium: "bg-gradient-to-r from-copper to-copper-light text-accent-foreground hover:brightness-110 shadow-lg hover:shadow-glow font-semibold",
-        "premium-outline": "border-2 border-copper bg-transparent text-copper hover:bg-copper hover:text-accent-foreground font-semibold",
+        hero: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl font-semibold tracking-wide",
+        "hero-outline": "border-2 border-white/30 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm",
+        premium: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl font-semibold",
+        "premium-outline": "border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-primary-foreground font-semibold",
       },
       size: {
         default: "h-10 px-4 py-2",
