@@ -42,6 +42,16 @@ const slides = [
 export function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+
+  // Parallax scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const nextSlide = useCallback(() => {
     if (isAnimating) return;
@@ -72,7 +82,7 @@ export function Hero() {
 
   return (
     <section id="accueil" className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Background Images with crossfade */}
+      {/* Background Images with crossfade and parallax */}
       {slides.map((slide, index) => (
         <div
           key={index}
@@ -83,10 +93,10 @@ export function Hero() {
           <img
             src={slide.image}
             alt={`${slide.headline} ${slide.highlight}`}
-            className="w-full h-full object-cover scale-105"
+            className="w-full h-[120%] object-cover"
             style={{
-              transform: index === currentSlide ? "scale(1.05)" : "scale(1)",
-              transition: "transform 6s ease-out",
+              transform: `translateY(${scrollY * 0.3}px) scale(${index === currentSlide ? 1.05 : 1})`,
+              transition: "transform 0.1s linear",
             }}
           />
         </div>
