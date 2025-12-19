@@ -4,12 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Mail, MapPin, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoAne from "@/assets/logo-ane.png";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const services = [
   { name: "Aménagement Foncier", href: "/services/amenagement-foncier" },
@@ -22,7 +16,7 @@ const services = [
 
 const navigation = [
   { name: "Accueil", href: "/" },
-  { name: "Services", href: "/services", hasDropdown: true },
+  { name: "Services", href: "#", hasDropdown: true },
   { name: "Projets", href: "/projets" },
   { name: "À propos", href: "/a-propos" },
   { name: "Actualités", href: "/actualites" },
@@ -33,6 +27,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
+  const [isServicesHovered, setIsServicesHovered] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -91,39 +86,51 @@ export function Header() {
             <div className="hidden lg:flex items-center gap-8">
               {navigation.map((item) => (
                 item.hasDropdown ? (
-                  <DropdownMenu key={item.name}>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        className={cn(
-                          "font-medium transition-colors relative group flex items-center gap-1",
-                          isServicesActive
-                            ? "text-primary"
-                            : "text-foreground/80 hover:text-primary"
-                        )}
-                      >
-                        {item.name}
-                        <ChevronDown size={16} />
-                        <span className={cn(
-                          "absolute -bottom-1 left-0 h-0.5 bg-copper transition-all duration-300",
-                          isServicesActive ? "w-full" : "w-0 group-hover:w-full"
-                        )} />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-56">
-                      <DropdownMenuItem asChild>
-                        <Link to="/services" className="w-full font-medium">
-                          Tous les services
-                        </Link>
-                      </DropdownMenuItem>
-                      {services.map((service) => (
-                        <DropdownMenuItem key={service.href} asChild>
-                          <Link to={service.href} className="w-full">
+                  <div 
+                    key={item.name}
+                    className="relative"
+                    onMouseEnter={() => setIsServicesHovered(true)}
+                    onMouseLeave={() => setIsServicesHovered(false)}
+                  >
+                    <button
+                      className={cn(
+                        "font-medium transition-colors relative group flex items-center gap-1 py-2",
+                        isServicesActive
+                          ? "text-primary"
+                          : "text-foreground/80 hover:text-primary"
+                      )}
+                    >
+                      {item.name}
+                      <ChevronDown size={16} className={cn(
+                        "transition-transform duration-200",
+                        isServicesHovered && "rotate-180"
+                      )} />
+                      <span className={cn(
+                        "absolute -bottom-1 left-0 h-0.5 bg-copper transition-all duration-300",
+                        isServicesActive || isServicesHovered ? "w-full" : "w-0"
+                      )} />
+                    </button>
+                    
+                    {/* Hover Dropdown */}
+                    <div className={cn(
+                      "absolute top-full left-0 pt-2 transition-all duration-200",
+                      isServicesHovered 
+                        ? "opacity-100 visible translate-y-0" 
+                        : "opacity-0 invisible -translate-y-2"
+                    )}>
+                      <div className="bg-card border border-border rounded-lg shadow-lg py-2 min-w-56">
+                        {services.map((service) => (
+                          <Link
+                            key={service.href}
+                            to={service.href}
+                            className="block px-4 py-2.5 text-foreground/80 hover:text-primary hover:bg-muted transition-colors"
+                          >
                             {service.name}
                           </Link>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <Link
                     key={item.name}
@@ -193,13 +200,6 @@ export function Header() {
                       "overflow-hidden transition-all duration-300 pl-4",
                       isMobileServicesOpen ? "max-h-96" : "max-h-0"
                     )}>
-                      <Link
-                        to="/services"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="block py-2 text-foreground/70 hover:text-primary font-medium"
-                      >
-                        Tous les services
-                      </Link>
                       {services.map((service) => (
                         <Link
                           key={service.href}
