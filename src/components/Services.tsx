@@ -54,14 +54,14 @@ export function Services() {
       <div className="container-custom">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="inline-block text-copper font-semibold text-sm uppercase tracking-widest mb-4">
+          <span className="inline-block text-primary-foreground/90 font-semibold text-sm uppercase tracking-widest mb-4">
             Nos expertises
           </span>
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
             Des solutions complètes pour vos{" "}
-            <span className="text-copper">projets d'aménagement</span>
+            <span className="text-primary-foreground/90">projets d'aménagement</span>
           </h2>
-          <p className="text-primary-foreground/80 text-lg">
+          <p className="text-primary-foreground/70 text-lg">
             Découvrez notre gamme complète de services professionnels, 
             conçus pour répondre à tous vos besoins en aménagement foncier et forestier.
           </p>
@@ -72,11 +72,11 @@ export function Services() {
           {services.map((service, index) => (
             <div
               key={index}
-              className="group bg-primary-foreground/5 backdrop-blur-sm rounded-2xl p-8 border border-primary-foreground/10 hover:bg-primary-foreground/10 hover:border-copper/30 transition-all duration-300"
+              className="group bg-primary-foreground/5 backdrop-blur-sm rounded-2xl p-8 border border-primary-foreground/10 hover:bg-primary-foreground/10 hover:border-primary-foreground/30 transition-all duration-300"
             >
               {/* Icon */}
-              <div className="w-14 h-14 bg-copper/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-copper/30 transition-colors">
-                <service.icon className="w-7 h-7 text-copper" />
+              <div className="w-14 h-14 bg-primary-foreground/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-foreground/20 transition-colors">
+                <service.icon className="w-7 h-7 text-primary-foreground" />
               </div>
 
               {/* Content */}
@@ -102,7 +102,7 @@ export function Services() {
               {/* Link */}
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 text-copper font-medium hover:text-copper/80 transition-colors"
+                className="inline-flex items-center gap-2 text-primary-foreground font-medium hover:text-primary-foreground/80 transition-colors"
               >
                 En savoir plus
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
