@@ -22,10 +22,10 @@ const values = [
 
 export function About() {
   return (
-    <section id="apropos" className="section-padding bg-primary text-primary-foreground relative overflow-hidden">
+    <section id="apropos" className="section-padding bg-secondary relative overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-copper/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-72 h-72 bg-primary-foreground/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-72 h-72 bg-muted/50 rounded-full blur-3xl" />
 
       <div className="container-custom relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-16">
@@ -54,22 +54,22 @@ export function About() {
             <span className="inline-block text-copper font-semibold text-sm uppercase tracking-widest mb-4">
               À propos de nous
             </span>
-            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
               Expert en aménagement,{" "}
-              <span className="text-copper">artisan de votre succès</span>
+              <span className="text-primary">artisan de votre succès</span>
             </h2>
-            <p className="text-primary-foreground/80 text-lg mb-6 leading-relaxed">
+            <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
               Notre mission est de valoriser et de transformer les espaces fonciers et forestiers 
               en solutions durables et harmonieuses, en alliant innovation, respect de l'environnement 
               et satisfaction client.
             </p>
-            <p className="text-primary-foreground/70 mb-8 leading-relaxed">
+            <p className="text-muted-foreground mb-8 leading-relaxed">
               Nous nous engageons à accompagner nos partenaires dans la réalisation de leurs projets, 
               tout en contribuant à un avenir équilibré entre développement humain et préservation 
               des ressources naturelles.
             </p>
 
-            <Button variant="hero" size="lg">
+            <Button variant="premium" size="lg">
               Découvrir notre histoire
               <ArrowRight className="w-5 h-5" />
             </Button>
@@ -81,15 +81,15 @@ export function About() {
           {values.map((value, index) => (
             <div
               key={index}
-              className="bg-primary-foreground/5 backdrop-blur-sm border border-primary-foreground/10 rounded-xl p-6 hover:bg-primary-foreground/10 transition-all duration-300 hover:border-copper/30 group"
+              className="bg-card backdrop-blur-sm border border-border rounded-xl p-6 hover:border-copper/30 transition-all duration-300 shadow-premium group"
             >
               <div className="flex items-start gap-4">
-                <div className="w-14 h-14 bg-copper/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-copper/30 transition-colors">
-                  <value.icon className="w-7 h-7 text-copper" />
+                <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-copper/20 transition-colors">
+                  <value.icon className="w-7 h-7 text-primary group-hover:text-copper transition-colors" />
                 </div>
                 <div>
-                  <h3 className="font-display text-xl font-bold mb-2">{value.title}</h3>
-                  <p className="text-primary-foreground/70 text-sm leading-relaxed">{value.description}</p>
+                  <h3 className="font-display text-xl font-bold text-foreground mb-2">{value.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{value.description}</p>
                 </div>
               </div>
             </div>
