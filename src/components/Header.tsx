@@ -1,21 +1,23 @@
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Mail, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoAne from "@/assets/logo-ane.png";
 
 const navigation = [
-  { name: "Accueil", href: "#accueil" },
-  { name: "Services", href: "#services" },
-  { name: "Projets", href: "#projets" },
-  { name: "À propos", href: "#apropos" },
-  { name: "Actualités", href: "#actualites" },
-  { name: "Contact", href: "#contact" },
+  { name: "Accueil", href: "/" },
+  { name: "Services", href: "/services" },
+  { name: "Projets", href: "/projets" },
+  { name: "À propos", href: "/a-propos" },
+  { name: "Actualités", href: "/actualites" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,33 +61,43 @@ export function Header() {
         <div className="container-custom">
           <nav className="flex items-center justify-between">
             {/* Logo */}
-            <a href="#accueil" className="flex items-center group">
+            <Link to="/" className="flex items-center group">
               <img 
                 src={logoAne} 
                 alt="ANE SARL - Aménagement Nature Environnement" 
                 className="h-12 md:h-14 w-auto transition-transform group-hover:scale-105"
               />
-            </a>
+            </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-8">
               {navigation.map((item) => (
-                <a
+                <Link
                   key={item.name}
-                  href={item.href}
-                  className="text-foreground/80 hover:text-primary font-medium transition-colors relative group"
+                  to={item.href}
+                  className={cn(
+                    "font-medium transition-colors relative group",
+                    location.pathname === item.href
+                      ? "text-primary"
+                      : "text-foreground/80 hover:text-primary"
+                  )}
                 >
                   {item.name}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-copper transition-all duration-300 group-hover:w-full" />
-                </a>
+                  <span className={cn(
+                    "absolute -bottom-1 left-0 h-0.5 bg-copper transition-all duration-300",
+                    location.pathname === item.href ? "w-full" : "w-0 group-hover:w-full"
+                  )} />
+                </Link>
               ))}
             </div>
 
             {/* CTA Button */}
             <div className="hidden lg:flex items-center gap-4">
-              <Button variant="premium" size="lg">
-                Demander un devis
-              </Button>
+              <Link to="/contact">
+                <Button variant="premium" size="lg">
+                  Demander un devis
+                </Button>
+              </Link>
             </div>
 
             {/* Mobile menu button */}
@@ -106,18 +118,25 @@ export function Header() {
           >
             <div className="flex flex-col gap-4 py-4 border-t border-border">
               {navigation.map((item) => (
-                <a
+                <Link
                   key={item.name}
-                  href={item.href}
+                  to={item.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-foreground/80 hover:text-primary font-medium transition-colors py-2"
+                  className={cn(
+                    "font-medium transition-colors py-2",
+                    location.pathname === item.href
+                      ? "text-primary"
+                      : "text-foreground/80 hover:text-primary"
+                  )}
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
-              <Button variant="premium" className="mt-2">
-                Demander un devis
-              </Button>
+              <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>
+                <Button variant="premium" className="mt-2 w-full">
+                  Demander un devis
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
