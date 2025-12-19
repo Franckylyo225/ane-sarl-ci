@@ -27,13 +27,6 @@ const values = [
   },
 ];
 
-const milestones = [
-  { year: "1900", title: "Création d'ANE SARL", description: "Une vision claire : apporter des solutions expertes et personnalisées" },
-  { year: "2005", title: "Premier projet forestier majeur", description: "Délimitation de 10 forêts classées" },
-  { year: "2012", title: "Extension des services", description: "Ajout des services BTP et informatique" },
-  { year: "2018", title: "Projet 72 forêts", description: "Lancement du projet national de délimitation" },
-  { year: "2023", title: "Innovation technologique", description: "Intégration des drones et SIG avancés" },
-];
 
 const stats = [
   { value: "25+", label: "Années d'expérience" },
@@ -100,51 +93,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Notre équipe */}
-      <section className="section-padding bg-secondary">
-        <div className="container-custom">
-          <div 
-            ref={teamReveal.ref}
-            className={`text-center max-w-4xl mx-auto mb-12 scroll-reveal ${teamReveal.isVisible ? "visible" : ""}`}
-          >
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-6">
-              <UsersRound className="w-8 h-8 text-primary" />
-            </div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-6">
-              Notre équipe
-            </h2>
-            <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
-              Derrière ANE SARL, une équipe d'experts passionnés et dévoués. Chaque membre apporte une expertise unique, 
-              que ce soit dans la topographie, la géomatique, l'aménagement ou la gestion informatique. 
-              Ensemble, nous travaillons pour vous offrir des solutions adaptées et innovantes.
-            </p>
-          </div>
-
-          {/* Team Images Grid */}
-          <div className="grid md:grid-cols-3 gap-6">
-            {teamImages.map((image, index) => (
-              <div 
-                key={index}
-                ref={setTeamImageRef(index)}
-                className={`relative rounded-2xl overflow-hidden shadow-premium-lg group scroll-reveal ${
-                  teamImagesVisible[index] ? "visible" : ""
-                }`}
-                style={{ transitionDelay: `${index * 150}ms` }}
-              >
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <p className="text-primary-foreground font-semibold">{image.alt}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* About Content - Mission */}
       <section className="section-padding bg-background">
@@ -224,7 +172,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="section-padding bg-secondary">
+      <section className="section-padding bg-background">
         <div className="container-custom">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -256,39 +204,48 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Timeline */}
-      <section className="section-padding bg-background">
+      {/* Notre équipe */}
+      <section className="section-padding bg-secondary">
         <div className="container-custom">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Notre parcours
+          <div 
+            ref={teamReveal.ref}
+            className={`text-center max-w-4xl mx-auto mb-12 scroll-reveal ${teamReveal.isVisible ? "visible" : ""}`}
+          >
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-6">
+              <UsersRound className="w-8 h-8 text-primary" />
+            </div>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-6">
+              Notre équipe
             </h2>
-            <p className="text-muted-foreground text-lg">
-              Les étapes clés de notre développement.
+            <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
+              Derrière ANE SARL, une équipe d'experts passionnés et dévoués. Chaque membre apporte une expertise unique, 
+              que ce soit dans la topographie, la géomatique, l'aménagement ou la gestion informatique. 
+              Ensemble, nous travaillons pour vous offrir des solutions adaptées et innovantes.
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            <div className="relative">
-              {/* Timeline line */}
-              <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-border transform md:-translate-x-1/2" />
-              
-              {milestones.map((milestone, index) => (
-                <div key={index} className={`relative flex items-center mb-8 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
-                  {/* Timeline dot */}
-                  <div className="absolute left-8 md:left-1/2 w-4 h-4 bg-primary rounded-full transform -translate-x-1/2 z-10" />
-                  
-                  {/* Content */}
-                  <div className={`ml-16 md:ml-0 md:w-1/2 ${index % 2 === 0 ? 'md:pr-12 md:text-right' : 'md:pl-12'}`}>
-                    <div className="bg-card p-6 rounded-xl shadow-premium">
-                      <span className="text-copper font-bold text-lg">{milestone.year}</span>
-                      <h3 className="font-display text-xl font-bold text-foreground mt-2">{milestone.title}</h3>
-                      <p className="text-muted-foreground mt-2">{milestone.description}</p>
-                    </div>
-                  </div>
+          {/* Team Images Grid */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {teamImages.map((image, index) => (
+              <div 
+                key={index}
+                ref={setTeamImageRef(index)}
+                className={`relative rounded-2xl overflow-hidden shadow-premium-lg group scroll-reveal ${
+                  teamImagesVisible[index] ? "visible" : ""
+                }`}
+                style={{ transitionDelay: `${index * 150}ms` }}
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <p className="text-primary-foreground font-semibold">{image.alt}</p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
