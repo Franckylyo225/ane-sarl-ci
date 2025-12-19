@@ -8,6 +8,7 @@ import {
   ArrowRight 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const services = [
   {
@@ -15,36 +16,42 @@ const services = [
     title: "Aménagement Foncier",
     description: "Conseils en urbanisme, gestion de projets de lotissement et valorisation optimale de vos terrains.",
     features: ["Lotissement", "Urbanisme", "Valorisation"],
+    href: "/services/amenagement-foncier",
   },
   {
     icon: TreePine,
     title: "Aménagement Forestier",
     description: "Gestion durable des forêts, reboisement et préservation de la biodiversité pour un avenir vert.",
     features: ["Reboisement", "Biodiversité", "Exploitation durable"],
+    href: "/services/amenagement-forestier",
   },
   {
     icon: Building2,
     title: "Bâtiment & Travaux Publics",
     description: "Construction et réhabilitation de bâtiments, infrastructures de qualité pour vos projets.",
     features: ["Construction", "Réhabilitation", "Infrastructure"],
+    href: "/services/btp",
   },
   {
     icon: Compass,
     title: "Topographie",
     description: "Relevés topographiques précis, calculs de surface et modélisation géométrique avancée.",
     features: ["Relevés", "Calculs", "Modélisation"],
+    href: "/services/topographie",
   },
   {
     icon: Globe,
     title: "Géomatique",
     description: "Analyse de données géographiques et conception de systèmes d'information géographiques (SIG).",
     features: ["Bases de données", "SIG", "Cartographie"],
+    href: "/services/geomatique",
   },
   {
     icon: Monitor,
     title: "Informatique",
     description: "Développement web, maintenance informatique et fourniture de matériels de qualité.",
     features: ["Sites web", "Maintenance", "Équipements"],
+    href: "/services/informatique",
   },
 ];
 
@@ -100,23 +107,25 @@ export function Services() {
               </div>
 
               {/* Link */}
-              <a
-                href="#contact"
+              <Link
+                to={service.href}
                 className="inline-flex items-center gap-2 text-primary font-medium hover:text-primary/80 transition-colors"
               >
                 En savoir plus
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </a>
+              </Link>
             </div>
           ))}
         </div>
 
         {/* CTA */}
         <div className="text-center mt-12">
-          <Button variant="hero" size="lg">
-            Demander un devis gratuit
-            <ArrowRight className="w-5 h-5" />
-          </Button>
+          <Link to="/contact">
+            <Button variant="hero" size="lg">
+              Demander un devis gratuit
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
