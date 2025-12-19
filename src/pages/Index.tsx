@@ -7,6 +7,7 @@ import { About } from "@/components/About";
 import { Testimonials } from "@/components/Testimonials";
 import { News } from "@/components/News";
 import { Footer } from "@/components/Footer";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
 const Index = () => {
   return (
@@ -22,6 +23,7 @@ const Index = () => {
         <News />
       </main>
       <Footer />
+      <ScrollToTop />
     </div>
   );
 };
