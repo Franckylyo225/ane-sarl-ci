@@ -69,6 +69,13 @@ export default {
           "gray-dark": "hsl(var(--ane-gray-dark))",
           "gray-light": "hsl(var(--ane-gray-light))",
         },
+        copper: {
+          DEFAULT: "hsl(35 80% 45%)",
+          light: "hsl(35 75% 55%)",
+        },
+        forest: {
+          light: "hsl(140 65% 40%)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
