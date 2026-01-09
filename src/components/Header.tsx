@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, Mail, MapPin, ChevronDown } from "lucide-react";
+import { Menu, X, Phone, Mail, MapPin, ChevronDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { GlobalSearch } from "@/components/GlobalSearch";
 import logoAne from "@/assets/logo-ane.png";
 
 const services = [
@@ -28,7 +29,21 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
   const [isServicesHovered, setIsServicesHovered] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const location = useLocation();
+
+  // Handle keyboard shortcut for search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsSearchOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -152,8 +167,18 @@ export function Header() {
               ))}
             </div>
 
-            {/* CTA Button */}
-            <div className="hidden lg:flex items-center gap-4">
+            {/* Search & CTA Button */}
+            <div className="hidden lg:flex items-center gap-3">
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="flex items-center gap-2 px-3 py-2 text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted rounded-lg transition-colors"
+              >
+                <Search className="w-4 h-4" />
+                <span className="text-sm">Rechercher</span>
+                <kbd className="hidden xl:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] bg-background rounded border border-border">
+                  ⌘K
+                </kbd>
+              </button>
               <Link to="/contact">
                 <Button variant="premium" size="lg">
                   Demander un devis
@@ -228,6 +253,16 @@ export function Header() {
                   </Link>
                 )
               ))}
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsSearchOpen(true);
+                }}
+                className="flex items-center gap-2 py-2 text-foreground/80 hover:text-primary"
+              >
+                <Search className="w-4 h-4" />
+                Rechercher
+              </button>
               <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>
                 <Button variant="premium" className="mt-2 w-full">
                   Demander un devis
@@ -237,6 +272,9 @@ export function Header() {
           </div>
         </div>
       </header>
+
+      {/* Global Search Modal */}
+      <GlobalSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </>
   );
 }
