@@ -12,10 +12,15 @@ import { fr } from "date-fns/locale";
 type Project = Tables<'projects'>;
 type ProjectImage = Tables<'project_images'>;
 
+type ProjectWithCover = Project & {
+  cover_image?: string;
+};
+
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [images, setImages] = useState<ProjectImage[]>([]);
+  const [similarProjects, setSimilarProjects] = useState<ProjectWithCover[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
@@ -61,6 +66,56 @@ export default function ProjectDetailPage() {
         setImages(imagesData);
       }
 
+      // Fetch similar projects (same category or recent)
+      let similarQuery = supabase
+        .from('projects')
+        .select('*')
+        .eq('published', true)
+        .neq('id', id)
+        .limit(3);
+
+      if (projectData.category) {
+        similarQuery = similarQuery.eq('category', projectData.category);
+      }
+
+      const { data: similarData } = await similarQuery.order('created_at', { ascending: false });
+
+      // If not enough similar projects, fetch recent ones
+      let finalSimilar = similarData || [];
+      if (finalSimilar.length < 3) {
+        const { data: recentData } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('published', true)
+          .neq('id', id)
+          .order('created_at', { ascending: false })
+          .limit(3 - finalSimilar.length);
+
+        if (recentData) {
+          const existingIds = new Set(finalSimilar.map(p => p.id));
+          const additionalProjects = recentData.filter(p => !existingIds.has(p.id));
+          finalSimilar = [...finalSimilar, ...additionalProjects].slice(0, 3);
+        }
+      }
+
+      // Fetch cover images for similar projects
+      const similarWithImages = await Promise.all(
+        finalSimilar.map(async (proj) => {
+          const { data: imageData } = await supabase
+            .from('project_images')
+            .select('image_url')
+            .eq('project_id', proj.id)
+            .eq('is_cover', true)
+            .maybeSingle();
+
+          return {
+            ...proj,
+            cover_image: imageData?.image_url || undefined,
+          };
+        })
+      );
+
+      setSimilarProjects(similarWithImages);
       setIsLoading(false);
     };
 
@@ -304,6 +359,65 @@ export default function ProjectDetailPage() {
           </div>
         </div>
       </section>
+
+      {/* Similar Projects */}
+      {similarProjects.length > 0 && (
+        <section className="section-padding bg-secondary">
+          <div className="container-custom">
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-8">
+              Projets similaires
+            </h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {similarProjects.map((proj) => (
+                <Link
+                  key={proj.id}
+                  to={`/projets/${proj.id}`}
+                  className="group bg-card rounded-2xl overflow-hidden shadow-premium card-hover"
+                >
+                  {/* Image */}
+                  <div className="relative h-48 overflow-hidden">
+                    {proj.cover_image ? (
+                      <img
+                        src={proj.cover_image}
+                        alt={proj.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                        <span className="text-muted-foreground">Pas d'image</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
+                    {proj.category && (
+                      <div className="absolute top-4 left-4">
+                        <span className="px-3 py-1 bg-copper text-accent-foreground text-xs font-semibold rounded-full">
+                          {proj.category}
+                        </span>
+                      </div>
+                    )}
+                    {proj.location && (
+                      <div className="absolute bottom-4 left-4 flex items-center gap-2 text-primary-foreground/90 text-sm">
+                        <MapPin className="w-4 h-4" />
+                        {proj.location}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-6">
+                    <h3 className="font-display text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                      {proj.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm line-clamp-2">
+                      {proj.description}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Lightbox */}
       {selectedImageIndex !== null && (
