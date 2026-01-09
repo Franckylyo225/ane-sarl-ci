@@ -21,15 +21,16 @@ export default function AuthPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   
-  const { signIn, signUp, user, isLoading } = useAuth();
+  const { signIn, signUp, user, isLoading, isRolesLoading, isAdmin, isModerator } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (user && !isLoading) {
+    // Wait for both auth and roles to be loaded before redirecting
+    if (!isLoading && !isRolesLoading && user && (isAdmin || isModerator)) {
       navigate('/admin');
     }
-  }, [user, isLoading, navigate]);
+  }, [user, isLoading, isRolesLoading, isAdmin, isModerator, navigate]);
 
   const validate = () => {
     try {
@@ -70,7 +71,7 @@ export default function AuthPage() {
         title: 'Connexion réussie',
         description: 'Bienvenue dans l\'espace administration',
       });
-      navigate('/admin');
+      // Navigation is handled by the useEffect watching auth state
     }
   };
 
@@ -99,7 +100,7 @@ export default function AuthPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || (user && isRolesLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
