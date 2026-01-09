@@ -18,17 +18,24 @@ export function News() {
 
   useEffect(() => {
     const fetchArticles = async () => {
-      const { data, error } = await supabase
-        .from('articles')
-        .select('*')
-        .eq('published', true)
-        .order('created_at', { ascending: false })
-        .limit(3);
+      try {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('published', true)
+          .order('created_at', { ascending: false })
+          .limit(3);
 
-      if (!error && data) {
-        setArticles(data);
+        if (error) {
+          console.error('Error fetching articles:', error);
+        } else if (data) {
+          setArticles(data);
+        }
+      } catch (err) {
+        console.error('Unexpected error fetching articles:', err);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     fetchArticles();
