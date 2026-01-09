@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Calendar, ArrowRight, Clock, Loader2 } from "lucide-react";
@@ -120,13 +121,13 @@ export default function NewsPage() {
                     </p>
 
                     {/* Read more link */}
-                    <a
-                      href="#"
+                    <Link
+                      to={`/actualites/${article.id}`}
                       className="inline-flex items-center gap-2 text-primary font-semibold text-sm group-hover:gap-3 transition-all"
                     >
                       Lire la suite
                       <ArrowRight className="w-4 h-4" />
-                    </a>
+                    </Link>
                   </div>
                 </article>
               ))}
