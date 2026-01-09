@@ -6,6 +6,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  isRolesLoading: boolean;
   isAdmin: boolean;
   isModerator: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
@@ -19,10 +20,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRolesLoading, setIsRolesLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isModerator, setIsModerator] = useState(false);
 
   const checkUserRoles = async (userId: string) => {
+    setIsRolesLoading(true);
     try {
       const { data: adminData } = await supabase.rpc('has_role', {
         _user_id: userId,
@@ -39,6 +42,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Error checking roles:', error);
       setIsAdmin(false);
       setIsModerator(false);
+    } finally {
+      setIsRolesLoading(false);
     }
   };
 
@@ -101,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       session,
       isLoading,
+      isRolesLoading,
       isAdmin,
       isModerator,
       signIn,
