@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ExternalLink, MapPin, Loader2 } from "lucide-react";
+import { ArrowRight, ExternalLink, MapPin, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
 import { Link } from "react-router-dom";
@@ -12,11 +12,13 @@ type Project = Tables<'projects'> & {
 };
 
 const categories = ["Tous", "Aménagement forestier", "Aménagement foncier", "BTP", "Topographie", "Géomatique"];
+const PROJECTS_PER_PAGE = 6;
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("Tous");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -56,9 +58,44 @@ export default function ProjectsPage() {
     fetchProjects();
   }, []);
 
+  // Reset page when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory]);
+
   const filteredProjects = activeCategory === "Tous" 
     ? projects 
     : projects.filter(p => p.category === activeCategory);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredProjects.length / PROJECTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * PROJECTS_PER_PAGE;
+  const paginatedProjects = filteredProjects.slice(startIndex, startIndex + PROJECTS_PER_PAGE);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 400, behavior: 'smooth' });
+  };
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        pages.push(1, 2, 3, 4, '...', totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+      }
+    }
+    
+    return pages;
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -85,7 +122,7 @@ export default function ProjectsPage() {
       <section className="section-padding bg-secondary">
         <div className="container-custom">
           {/* Filter tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-12">
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
             {categories.map((category) => (
               <button
                 key={category}
@@ -101,6 +138,13 @@ export default function ProjectsPage() {
             ))}
           </div>
 
+          {/* Results count */}
+          {!isLoading && filteredProjects.length > 0 && (
+            <div className="text-center text-muted-foreground mb-8">
+              {filteredProjects.length} projet{filteredProjects.length > 1 ? 's' : ''} trouvé{filteredProjects.length > 1 ? 's' : ''}
+            </div>
+          )}
+
           {/* Loading State */}
           {isLoading ? (
             <div className="flex justify-center py-12">
@@ -111,71 +155,119 @@ export default function ProjectsPage() {
               <p className="text-muted-foreground text-lg">Aucun projet disponible pour le moment.</p>
             </div>
           ) : (
-            /* Projects Grid */
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProjects.map((project) => (
-                <div
-                  key={project.id}
-                  className="group bg-card rounded-2xl overflow-hidden shadow-premium card-hover"
-                >
-                  {/* Image */}
-                  <div className="relative h-56 overflow-hidden">
-                    {project.cover_image ? (
-                      <img
-                        src={project.cover_image}
-                        alt={project.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-muted flex items-center justify-center">
-                        <span className="text-muted-foreground">Pas d'image</span>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
-                    {project.category && (
-                      <div className="absolute top-4 left-4">
-                        <span className="px-3 py-1 bg-copper text-accent-foreground text-xs font-semibold rounded-full">
-                          {project.category}
+            <>
+              {/* Projects Grid */}
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {paginatedProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="group bg-card rounded-2xl overflow-hidden shadow-premium card-hover"
+                  >
+                    {/* Image */}
+                    <div className="relative h-56 overflow-hidden">
+                      {project.cover_image ? (
+                        <img
+                          src={project.cover_image}
+                          alt={project.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-muted flex items-center justify-center">
+                          <span className="text-muted-foreground">Pas d'image</span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
+                      {project.category && (
+                        <div className="absolute top-4 left-4">
+                          <span className="px-3 py-1 bg-copper text-accent-foreground text-xs font-semibold rounded-full">
+                            {project.category}
+                          </span>
+                        </div>
+                      )}
+                      {project.location && (
+                        <div className="absolute bottom-4 left-4 flex items-center gap-2 text-primary-foreground/90 text-sm">
+                          <MapPin className="w-4 h-4" />
+                          {project.location}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-6">
+                      <h3 className="font-display text-xl font-bold text-foreground mb-3 line-clamp-2">
+                        {project.title}
+                      </h3>
+                      <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                        {project.description}
+                      </p>
+
+                      {/* Client info */}
+                      {project.client && (
+                        <div className="mb-4 pb-4 border-b border-border">
+                          <div className="text-xs text-muted-foreground">Client</div>
+                          <div className="text-sm font-medium text-foreground">{project.client}</div>
+                        </div>
+                      )}
+
+                      {/* Link */}
+                      <Link 
+                        to={`/projets/${project.id}`}
+                        className="inline-flex items-center gap-2 text-copper font-medium hover:gap-3 transition-all"
+                      >
+                        Voir le projet
+                        <ExternalLink className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-12">
+                  {/* Previous Button */}
+                  <button
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg border border-border bg-card text-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+
+                  {/* Page Numbers */}
+                  <div className="flex items-center gap-1">
+                    {getPageNumbers().map((page, index) => (
+                      page === '...' ? (
+                        <span key={`ellipsis-${index}`} className="px-3 py-2 text-muted-foreground">
+                          ...
                         </span>
-                      </div>
-                    )}
-                    {project.location && (
-                      <div className="absolute bottom-4 left-4 flex items-center gap-2 text-primary-foreground/90 text-sm">
-                        <MapPin className="w-4 h-4" />
-                        {project.location}
-                      </div>
-                    )}
+                      ) : (
+                        <button
+                          key={page}
+                          onClick={() => goToPage(page as number)}
+                          className={`min-w-[40px] h-10 rounded-lg font-medium transition-all ${
+                            currentPage === page
+                              ? "bg-primary text-primary-foreground"
+                              : "border border-border bg-card text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      )
+                    ))}
                   </div>
 
-                  {/* Content */}
-                  <div className="p-6">
-                    <h3 className="font-display text-xl font-bold text-foreground mb-3 line-clamp-2">
-                      {project.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                      {project.description}
-                    </p>
-
-                    {/* Client info */}
-                    {project.client && (
-                      <div className="mb-4 pb-4 border-b border-border">
-                        <div className="text-xs text-muted-foreground">Client</div>
-                        <div className="text-sm font-medium text-foreground">{project.client}</div>
-                      </div>
-                    )}
-
-                    {/* Link */}
-                    <Link 
-                      to={`/projets/${project.id}`}
-                      className="inline-flex items-center gap-2 text-copper font-medium hover:gap-3 transition-all"
-                    >
-                      Voir le projet
-                      <ExternalLink className="w-4 h-4" />
-                    </Link>
-                  </div>
+                  {/* Next Button */}
+                  <button
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg border border-border bg-card text-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </div>
       </section>
