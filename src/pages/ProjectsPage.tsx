@@ -165,10 +165,13 @@ export default function ProjectsPage() {
                     )}
 
                     {/* Link */}
-                    <span className="inline-flex items-center gap-2 text-copper font-medium cursor-pointer hover:gap-3 transition-all">
+                    <Link 
+                      to={`/projets/${project.id}`}
+                      className="inline-flex items-center gap-2 text-copper font-medium hover:gap-3 transition-all"
+                    >
                       Voir le projet
                       <ExternalLink className="w-4 h-4" />
-                    </span>
+                    </Link>
                   </div>
                 </div>
               ))}
