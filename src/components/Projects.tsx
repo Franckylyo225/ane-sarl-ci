@@ -22,38 +22,50 @@ export function Projects() {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      // Fetch projects
-      const { data: projectsData, error: projectsError } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('published', true)
-        .order('created_at', { ascending: false })
-        .limit(6);
+      try {
+        // Fetch projects
+        const { data: projectsData, error: projectsError } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('published', true)
+          .order('created_at', { ascending: false })
+          .limit(6);
 
-      if (projectsError || !projectsData) {
+        if (projectsError) {
+          console.error('Error fetching projects:', projectsError);
+          setIsLoading(false);
+          return;
+        }
+
+        if (!projectsData || projectsData.length === 0) {
+          setProjects([]);
+          setIsLoading(false);
+          return;
+        }
+
+        // Fetch cover images for each project
+        const projectsWithImages = await Promise.all(
+          projectsData.map(async (project) => {
+            const { data: imageData } = await supabase
+              .from('project_images')
+              .select('image_url')
+              .eq('project_id', project.id)
+              .eq('is_cover', true)
+              .maybeSingle();
+
+            return {
+              ...project,
+              cover_image: imageData?.image_url || undefined,
+            };
+          })
+        );
+
+        setProjects(projectsWithImages);
+      } catch (err) {
+        console.error('Unexpected error fetching projects:', err);
+      } finally {
         setIsLoading(false);
-        return;
       }
-
-      // Fetch cover images for each project
-      const projectsWithImages = await Promise.all(
-        projectsData.map(async (project) => {
-          const { data: imageData } = await supabase
-            .from('project_images')
-            .select('image_url')
-            .eq('project_id', project.id)
-            .eq('is_cover', true)
-            .maybeSingle();
-
-          return {
-            ...project,
-            cover_image: imageData?.image_url || undefined,
-          };
-        })
-      );
-
-      setProjects(projectsWithImages);
-      setIsLoading(false);
     };
 
     fetchProjects();
