@@ -22,7 +22,7 @@ const navItems = [
 ];
 
 export default function AdminLayout() {
-  const { user, isLoading, isAdmin, isModerator, signOut } = useAuth();
+  const { user, isLoading, isRolesLoading, isAdmin, isModerator, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -34,17 +34,18 @@ export default function AdminLayout() {
   }, [user, isLoading, navigate]);
 
   useEffect(() => {
-    if (!isLoading && user && !isAdmin && !isModerator) {
+    // Only redirect if roles have finished loading and user has no access
+    if (!isLoading && !isRolesLoading && user && !isAdmin && !isModerator) {
       navigate('/');
     }
-  }, [isAdmin, isModerator, isLoading, user, navigate]);
+  }, [isAdmin, isModerator, isLoading, isRolesLoading, user, navigate]);
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/auth');
   };
 
-  if (isLoading) {
+  if (isLoading || isRolesLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
