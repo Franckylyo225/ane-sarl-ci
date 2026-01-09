@@ -1,65 +1,45 @@
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Calendar, ArrowRight, Clock } from "lucide-react";
+import { Calendar, ArrowRight, Clock, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Tables } from "@/integrations/supabase/types";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
-const allArticles = [
-  {
-    id: 1,
-    category: "Projet",
-    title: "Lancement du projet d'aménagement de la forêt classée de Bossématié",
-    excerpt: "ANE SARL a été sélectionné pour piloter le projet de réhabilitation et d'aménagement durable de la forêt classée de Bossématié, l'une des plus importantes de Côte d'Ivoire.",
-    date: "15 Décembre 2024",
-    readTime: "5 min",
-    image: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=600&h=400&fit=crop",
-  },
-  {
-    id: 2,
-    category: "Partenariat",
-    title: "Signature d'un accord avec le Ministère des Eaux et Forêts",
-    excerpt: "Un partenariat stratégique a été conclu pour renforcer la gestion durable des ressources forestières et la préservation de la biodiversité en Côte d'Ivoire.",
-    date: "28 Novembre 2024",
-    readTime: "3 min",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop",
-  },
-  {
-    id: 3,
-    category: "Innovation",
-    title: "Déploiement de drones pour la cartographie forestière",
-    excerpt: "ANE SARL investit dans les technologies de pointe avec l'acquisition de drones professionnels pour améliorer la précision de ses relevés topographiques.",
-    date: "10 Novembre 2024",
-    readTime: "4 min",
-    image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=600&h=400&fit=crop",
-  },
-  {
-    id: 4,
-    category: "Formation",
-    title: "Programme de formation en SIG pour les agents forestiers",
-    excerpt: "ANE SARL lance un programme de formation en systèmes d'information géographique destiné aux agents du Ministère des Eaux et Forêts.",
-    date: "25 Octobre 2024",
-    readTime: "4 min",
-    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&h=400&fit=crop",
-  },
-  {
-    id: 5,
-    category: "Événement",
-    title: "ANE SARL au Forum International de l'Environnement",
-    excerpt: "Notre équipe a participé au Forum International de l'Environnement d'Abidjan pour présenter nos solutions innovantes en matière d'aménagement durable.",
-    date: "15 Octobre 2024",
-    readTime: "3 min",
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop",
-  },
-  {
-    id: 6,
-    category: "Projet",
-    title: "Achèvement du projet de lotissement à Yamoussoukro",
-    excerpt: "Le projet de lotissement et d'aménagement de la zone résidentielle de Yamoussoukro a été livré avec succès, offrant plus de 200 parcelles viabilisées.",
-    date: "1 Octobre 2024",
-    readTime: "4 min",
-    image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=400&fit=crop",
-  },
-];
+type Article = Tables<'articles'>;
 
 export default function NewsPage() {
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+
+      if (!error && data) {
+        setArticles(data);
+      }
+      setIsLoading(false);
+    };
+
+    fetchArticles();
+  }, []);
+
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), "d MMMM yyyy", { locale: fr });
+  };
+
+  const estimateReadTime = (content: string) => {
+    const wordCount = content.replace(/<[^>]*>/g, '').split(/\s+/).length;
+    const minutes = Math.ceil(wordCount / 200);
+    return `${minutes} min`;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -84,61 +64,74 @@ export default function NewsPage() {
       {/* Articles Grid */}
       <section className="section-padding bg-secondary">
         <div className="container-custom">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {allArticles.map((article) => (
-              <article
-                key={article.id}
-                className="group bg-card rounded-2xl overflow-hidden border border-border hover:border-primary/30 hover:shadow-xl transition-all duration-500"
-              >
-                {/* Image */}
-                <div className="relative h-52 overflow-hidden">
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                  <span className="absolute top-4 left-4 bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">
-                    {article.category}
-                  </span>
-                </div>
-
-                {/* Content */}
-                <div className="p-6">
-                  {/* Meta */}
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4" />
-                      {article.date}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="w-4 h-4" />
-                      {article.readTime}
-                    </span>
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : articles.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">Aucun article disponible pour le moment.</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {articles.map((article) => (
+                <article
+                  key={article.id}
+                  className="group bg-card rounded-2xl overflow-hidden border border-border hover:border-primary/30 hover:shadow-xl transition-all duration-500"
+                >
+                  {/* Image */}
+                  <div className="relative h-52 overflow-hidden">
+                    {article.cover_image_url ? (
+                      <img
+                        src={article.cover_image_url}
+                        alt={article.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                        <span className="text-muted-foreground">Pas d'image</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   </div>
 
-                  {/* Title */}
-                  <h3 className="font-display text-xl font-bold text-foreground mb-3 line-clamp-2 group-hover:text-primary transition-colors">
-                    {article.title}
-                  </h3>
+                  {/* Content */}
+                  <div className="p-6">
+                    {/* Meta */}
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4" />
+                        {formatDate(article.created_at)}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Clock className="w-4 h-4" />
+                        {estimateReadTime(article.content)}
+                      </span>
+                    </div>
 
-                  {/* Excerpt */}
-                  <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
-                    {article.excerpt}
-                  </p>
+                    {/* Title */}
+                    <h3 className="font-display text-xl font-bold text-foreground mb-3 line-clamp-2 group-hover:text-primary transition-colors">
+                      {article.title}
+                    </h3>
 
-                  {/* Read more link */}
-                  <a
-                    href="#"
-                    className="inline-flex items-center gap-2 text-primary font-semibold text-sm group-hover:gap-3 transition-all"
-                  >
-                    Lire la suite
-                    <ArrowRight className="w-4 h-4" />
-                  </a>
-                </div>
-              </article>
-            ))}
-          </div>
+                    {/* Excerpt */}
+                    <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
+                      {article.excerpt || article.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...'}
+                    </p>
+
+                    {/* Read more link */}
+                    <a
+                      href="#"
+                      className="inline-flex items-center gap-2 text-primary font-semibold text-sm group-hover:gap-3 transition-all"
+                    >
+                      Lire la suite
+                      <ArrowRight className="w-4 h-4" />
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
