@@ -211,15 +211,21 @@ export default function ProjectDetailPage() {
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
-            <div className="absolute inset-0 flex items-end">
-              <div className="container-custom pb-12">
+            {/* Back link at top */}
+            <div className="absolute top-24 left-0 right-0">
+              <div className="container-custom">
                 <Link 
                   to="/projets" 
-                  className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 transition-colors"
+                  className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Retour aux projets
                 </Link>
+              </div>
+            </div>
+            {/* Title at bottom */}
+            <div className="absolute inset-0 flex items-end">
+              <div className="container-custom pb-12">
                 {project.category && (
                   <span className="inline-block px-4 py-1.5 bg-copper text-accent-foreground text-sm font-semibold rounded-full mb-4">
                     {project.category}
@@ -236,19 +242,21 @@ export default function ProjectDetailPage() {
             <div className="container-custom">
               <Link 
                 to="/projets" 
-                className="inline-flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground mb-6 transition-colors"
+                className="inline-flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground mb-8 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Retour aux projets
               </Link>
-              {project.category && (
-                <span className="inline-block px-4 py-1.5 bg-copper text-accent-foreground text-sm font-semibold rounded-full mb-4">
-                  {project.category}
-                </span>
-              )}
-              <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold max-w-4xl">
-                {project.title}
-              </h1>
+              <div>
+                {project.category && (
+                  <span className="inline-block px-4 py-1.5 bg-copper text-accent-foreground text-sm font-semibold rounded-full mb-4">
+                    {project.category}
+                  </span>
+                )}
+                <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold max-w-4xl">
+                  {project.title}
+                </h1>
+              </div>
             </div>
           </div>
         )}
