@@ -17,8 +17,13 @@ export function Projects() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("Tous");
   const headerReveal = useScrollReveal({ threshold: 0.2 });
-  const { setRef, visibleItems } = useScrollRevealMultiple(6, { threshold: 0.15 });
   const ctaReveal = useScrollReveal({ threshold: 0.3 });
+  
+  const filteredProjects = activeCategory === "Tous" 
+    ? projects 
+    : projects.filter(p => p.category === activeCategory);
+  
+  const { setRef, visibleItems } = useScrollRevealMultiple(filteredProjects.length, { threshold: 0.15 });
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -70,10 +75,6 @@ export function Projects() {
 
     fetchProjects();
   }, []);
-
-  const filteredProjects = activeCategory === "Tous" 
-    ? projects 
-    : projects.filter(p => p.category === activeCategory);
 
   return (
     <section id="projets" className="section-padding bg-background">
