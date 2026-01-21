@@ -14,7 +14,7 @@ export function News() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const headerReveal = useScrollReveal({ threshold: 0.2 });
-  const { setRef, visibleItems } = useScrollRevealMultiple(3, { threshold: 0.15 });
+  const { setRef, visibleItems } = useScrollRevealMultiple(articles.length, { threshold: 0.15 });
 
   useEffect(() => {
     const fetchArticles = async () => {
