@@ -50,6 +50,51 @@ export type Database = {
         }
         Relationships: []
       }
+      hero_slides: {
+        Row: {
+          badge: string | null
+          button_link: string | null
+          button_text: string | null
+          created_at: string
+          description: string | null
+          display_order: number | null
+          headline: string
+          highlight: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          badge?: string | null
+          button_link?: string | null
+          button_text?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          headline: string
+          highlight?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          badge?: string | null
+          button_link?: string | null
+          button_text?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          headline?: string
+          highlight?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
