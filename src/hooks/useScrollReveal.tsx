@@ -45,43 +45,56 @@ export function useScrollRevealMultiple(
 ) {
   const { threshold = 0.1, rootMargin = "0px", triggerOnce = true } = options;
   const refs = useRef<(HTMLElement | null)[]>([]);
-  const [visibleItems, setVisibleItems] = useState<boolean[]>(
-    new Array(count).fill(false)
-  );
+  const [visibleItems, setVisibleItems] = useState<boolean[]>([]);
+  const observersRef = useRef<IntersectionObserver[]>([]);
 
+  // Reset visible items when count changes
   useEffect(() => {
-    const observers: IntersectionObserver[] = [];
+    setVisibleItems(new Array(count).fill(false));
+  }, [count]);
 
-    refs.current.forEach((element, index) => {
-      if (!element) return;
+  // Setup observers with a slight delay to ensure DOM elements are ready
+  useEffect(() => {
+    // Clean up previous observers
+    observersRef.current.forEach((obs) => obs.disconnect());
+    observersRef.current = [];
 
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setVisibleItems((prev) => {
-              const newState = [...prev];
-              newState[index] = true;
-              return newState;
-            });
-            if (triggerOnce) {
-              observer.unobserve(element);
+    // Small delay to ensure refs are populated after render
+    const timeoutId = setTimeout(() => {
+      refs.current.forEach((element, index) => {
+        if (!element) return;
+
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (entry.isIntersecting) {
+              setVisibleItems((prev) => {
+                const newState = [...prev];
+                newState[index] = true;
+                return newState;
+              });
+              if (triggerOnce) {
+                observer.unobserve(element);
+              }
+            } else if (!triggerOnce) {
+              setVisibleItems((prev) => {
+                const newState = [...prev];
+                newState[index] = false;
+                return newState;
+              });
             }
-          } else if (!triggerOnce) {
-            setVisibleItems((prev) => {
-              const newState = [...prev];
-              newState[index] = false;
-              return newState;
-            });
-          }
-        },
-        { threshold, rootMargin }
-      );
+          },
+          { threshold, rootMargin }
+        );
 
-      observer.observe(element);
-      observers.push(observer);
-    });
+        observer.observe(element);
+        observersRef.current.push(observer);
+      });
+    }, 100);
 
-    return () => observers.forEach((obs) => obs.disconnect());
+    return () => {
+      clearTimeout(timeoutId);
+      observersRef.current.forEach((obs) => obs.disconnect());
+    };
   }, [count, threshold, rootMargin, triggerOnce]);
 
   const setRef = (index: number) => (el: HTMLElement | null) => {
