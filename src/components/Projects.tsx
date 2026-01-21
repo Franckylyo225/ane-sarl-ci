@@ -17,7 +17,7 @@ export function Projects() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("Tous");
   const headerReveal = useScrollReveal({ threshold: 0.2 });
-  const { setRef, visibleItems } = useScrollRevealMultiple(3, { threshold: 0.15 });
+  const { setRef, visibleItems } = useScrollRevealMultiple(6, { threshold: 0.15 });
   const ctaReveal = useScrollReveal({ threshold: 0.3 });
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export function Projects() {
           .select('*')
           .eq('published', true)
           .order('created_at', { ascending: false })
-          .limit(3);
+          .limit(6);
 
         if (projectsError) {
           console.error('Error fetching projects:', projectsError);
