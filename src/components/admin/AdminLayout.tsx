@@ -10,13 +10,15 @@ import {
   Loader2,
   Menu,
   X,
-  Home
+  Home,
+  Images
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { to: '/admin', icon: LayoutDashboard, label: 'Tableau de bord', exact: true },
+  { to: '/admin/slides', icon: Images, label: 'Slides Hero' },
   { to: '/admin/articles', icon: Newspaper, label: 'Actualités' },
   { to: '/admin/projects', icon: FolderKanban, label: 'Projets' },
 ];

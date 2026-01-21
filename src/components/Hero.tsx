@@ -1,48 +1,96 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, ChevronLeft, ChevronRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
 
-// Import slide-specific images
+// Import fallback images
 import heroForestRoad from "@/assets/hero-forest-road.jpg";
 import heroLandPlot from "@/assets/hero-land-plot.jpg";
 import heroDrone from "@/assets/hero-drone.jpg";
 import heroInnovation from "@/assets/hero-innovation.jpg";
 
-const slides = [
+interface HeroSlide {
+  id: string;
+  badge: string | null;
+  headline: string;
+  highlight: string | null;
+  description: string | null;
+  image_url: string | null;
+  button_text: string | null;
+  button_link: string | null;
+}
+
+// Fallback static slides in case DB is empty
+const fallbackSlides: HeroSlide[] = [
   {
+    id: "1",
     badge: "Notre vision",
     headline: "Aménager aujourd'hui,",
     highlight: "préserver demain",
     description: "Votre partenaire de confiance pour un aménagement durable des terres et forêts. Nous transformons vos espaces en opportunités durables.",
-    image: heroForestRoad,
+    image_url: heroForestRoad,
+    button_text: "Découvrir nos services",
+    button_link: "#services",
   },
   {
+    id: "2",
     badge: "Notre expertise",
     headline: "Leader en",
     highlight: "aménagement foncier",
     description: "Plus de 25 ans d'expérience dans la valorisation et la transformation des espaces fonciers en Côte d'Ivoire. Lotissement, urbanisme et conseil expert.",
-    image: heroLandPlot,
+    image_url: heroLandPlot,
+    button_text: "Découvrir nos services",
+    button_link: "#services",
   },
   {
+    id: "3",
     badge: "Notre savoir-faire",
     headline: "Expertise forestière",
     highlight: "reconnue",
     description: "Gestion durable des forêts, reboisement et préservation de la biodiversité. Partenaire de confiance du Ministère des Eaux et Forêts.",
-    image: heroDrone,
+    image_url: heroDrone,
+    button_text: "Découvrir nos services",
+    button_link: "#services",
   },
   {
+    id: "4",
     badge: "Notre engagement",
     headline: "Innovation &",
     highlight: "développement durable",
     description: "Nous allions technologies modernes et respect de l'environnement pour des solutions pérennes qui profitent aux générations futures.",
-    image: heroInnovation,
+    image_url: heroInnovation,
+    button_text: "Découvrir nos services",
+    button_link: "#services",
   },
 ];
 
 export function Hero() {
+  const [slides, setSlides] = useState<HeroSlide[]>(fallbackSlides);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+
+  // Fetch slides from database
+  useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('hero_slides')
+          .select('id, badge, headline, highlight, description, image_url, button_text, button_link')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true });
+
+        if (!error && data && data.length > 0) {
+          setSlides(data);
+        }
+      } catch (err) {
+        console.error('Error fetching hero slides:', err);
+      }
+    };
+
+    fetchSlides();
+  }, []);
 
   // Parallax scroll effect
   useEffect(() => {
@@ -58,14 +106,14 @@ export function Hero() {
     setIsAnimating(true);
     setCurrentSlide((prev) => (prev + 1) % slides.length);
     setTimeout(() => setIsAnimating(false), 800);
-  }, [isAnimating]);
+  }, [isAnimating, slides.length]);
 
   const prevSlide = useCallback(() => {
     if (isAnimating) return;
     setIsAnimating(true);
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
     setTimeout(() => setIsAnimating(false), 800);
-  }, [isAnimating]);
+  }, [isAnimating, slides.length]);
 
   const goToSlide = (index: number) => {
     if (isAnimating || index === currentSlide) return;
@@ -80,19 +128,30 @@ export function Hero() {
     return () => clearInterval(interval);
   }, [nextSlide]);
 
+  // Get image URL (handle both local imports and remote URLs)
+  const getImageUrl = (imageUrl: string | null): string => {
+    if (!imageUrl) return heroForestRoad;
+    // If it starts with http or blob, it's a remote URL
+    if (imageUrl.startsWith('http') || imageUrl.startsWith('blob')) {
+      return imageUrl;
+    }
+    // Otherwise it's a local import (fallback)
+    return imageUrl;
+  };
+
   return (
     <section id="accueil" className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background Images with crossfade and parallax */}
       {slides.map((slide, index) => (
         <div
-          key={index}
+          key={slide.id}
           className={`absolute inset-0 transition-opacity duration-1000 ${
             index === currentSlide ? "opacity-100" : "opacity-0"
           }`}
         >
           <img
-            src={slide.image}
-            alt={`${slide.headline} ${slide.highlight}`}
+            src={getImageUrl(slide.image_url)}
+            alt={`${slide.headline} ${slide.highlight || ''}`}
             className="w-full h-[120%] object-cover"
             style={{
               transform: `translateY(${scrollY * 0.3}px) scale(${index === currentSlide ? 1.05 : 1})`,
@@ -140,7 +199,7 @@ export function Hero() {
         <div className="max-w-3xl">
           {slides.map((slide, index) => (
             <div
-              key={index}
+              key={slide.id}
               className={`transition-all duration-700 ${
                 index === currentSlide
                   ? "opacity-100 translate-y-0 relative"
@@ -148,31 +207,50 @@ export function Hero() {
               }`}
             >
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6">
-                <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                <span className="text-sm font-medium tracking-wider uppercase text-white">{slide.badge}</span>
-              </div>
+              {slide.badge && (
+                <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6">
+                  <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                  <span className="text-sm font-medium tracking-wider uppercase text-white">{slide.badge}</span>
+                </div>
+              )}
 
               {/* Headline */}
               <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-6 text-white">
                 {slide.headline}{" "}
-                <span className="text-primary block mt-2">{slide.highlight}</span>
+                {slide.highlight && (
+                  <span className="text-primary block mt-2">{slide.highlight}</span>
+                )}
               </h1>
 
               {/* Description */}
-              <p className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed">
-                {slide.description}
-              </p>
+              {slide.description && (
+                <p className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed">
+                  {slide.description}
+                </p>
+              )}
 
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button variant="hero" size="xl">
-                  Découvrir nos services
-                  <ArrowRight className="w-5 h-5" />
-                </Button>
-                <Button variant="hero-outline" size="xl">
-                  <Play className="w-5 h-5" />
-                  Voir nos réalisations
+                {slide.button_link?.startsWith('#') ? (
+                  <Button variant="hero" size="xl" asChild>
+                    <a href={slide.button_link}>
+                      {slide.button_text || 'Découvrir nos services'}
+                      <ArrowRight className="w-5 h-5" />
+                    </a>
+                  </Button>
+                ) : (
+                  <Button variant="hero" size="xl" asChild>
+                    <Link to={slide.button_link || '#services'}>
+                      {slide.button_text || 'Découvrir nos services'}
+                      <ArrowRight className="w-5 h-5" />
+                    </Link>
+                  </Button>
+                )}
+                <Button variant="hero-outline" size="xl" asChild>
+                  <Link to="/projets">
+                    <Play className="w-5 h-5" />
+                    Voir nos réalisations
+                  </Link>
                 </Button>
               </div>
             </div>
