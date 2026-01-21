@@ -34,7 +34,7 @@ export function Projects() {
           .select('*')
           .eq('published', true)
           .order('created_at', { ascending: false })
-          .limit(6);
+          .limit(3);
 
         if (projectsError) {
           console.error('Error fetching projects:', projectsError);
