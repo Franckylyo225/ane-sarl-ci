@@ -9,7 +9,7 @@ const badges = [
   },
   {
     icon: Award,
-    title: "25+ Ans",
+    title: "10 Ans",
     description: "D'expérience sur le terrain",
   },
   {
