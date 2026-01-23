@@ -52,7 +52,7 @@ export function About() {
             <div className="absolute -bottom-4 -right-4 w-full h-full border-2 border-copper/30 rounded-2xl -z-10" />
             {/* Stats badge */}
             <div className="absolute -bottom-6 -left-6 bg-copper text-primary-foreground px-6 py-4 rounded-xl shadow-premium">
-              <div className="text-3xl font-bold font-display">25+</div>
+              <div className="text-3xl font-bold font-display">10</div>
               <div className="text-sm opacity-90">Années d'expérience</div>
             </div>
           </div>

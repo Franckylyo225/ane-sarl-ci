@@ -16,7 +16,7 @@ const features = [
 ];
 
 const benefits = [
-  { title: "Expertise reconnue", description: "Plus de 25 ans d'expérience dans l'aménagement foncier en Côte d'Ivoire" },
+  { title: "Expertise reconnue", description: "10 ans d'expérience dans l'aménagement foncier en Côte d'Ivoire depuis 2015" },
   { title: "Conformité légale", description: "Respect strict des réglementations et normes en vigueur" },
   { title: "Valorisation optimale", description: "Maximisation de la valeur de vos terrains et propriétés" },
   { title: "Accompagnement complet", description: "De l'étude préliminaire à la réalisation finale du projet" },

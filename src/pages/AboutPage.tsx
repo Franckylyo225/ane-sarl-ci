@@ -29,7 +29,7 @@ const values = [
 
 
 const stats = [
-  { value: "25+", label: "Années d'expérience" },
+  { value: "10", label: "Années d'expérience" },
   { value: "500+", label: "Projets réalisés" },
   { value: "72", label: "Forêts classées" },
   { value: "50+", label: "Experts qualifiés" },
@@ -64,7 +64,7 @@ export default function AboutPage() {
               Expert en aménagement, artisan de votre succès
             </h1>
             <p className="text-primary-foreground/80 text-lg md:text-xl">
-              Depuis plus de 25 ans, ANE SARL accompagne les acteurs publics et privés dans leurs projets d'aménagement.
+              Depuis 2015, ANE SARL accompagne les acteurs publics et privés dans leurs projets d'aménagement.
             </p>
           </div>
         </div>
@@ -84,7 +84,7 @@ export default function AboutPage() {
               Notre histoire
             </h2>
             <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
-              Créée en 1900, ANE SARL a démarré avec une vision claire : apporter des solutions expertes et personnalisées 
+              Créée en 2015, ANE SARL a démarré avec une vision claire : apporter des solutions expertes et personnalisées 
               dans les domaines de l'aménagement foncier, forestier, BTP, topographie, géomatique. Au fil des années, 
               nous avons élargi notre champ d'expertise pour répondre aux besoins variés de nos clients tout en gardant 
               une approche humaine et centrée sur l'excellence.

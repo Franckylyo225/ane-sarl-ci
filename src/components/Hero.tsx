@@ -38,7 +38,7 @@ const fallbackSlides: HeroSlide[] = [
     badge: "Notre expertise",
     headline: "Leader en",
     highlight: "aménagement foncier",
-    description: "Plus de 25 ans d'expérience dans la valorisation et la transformation des espaces fonciers en Côte d'Ivoire. Lotissement, urbanisme et conseil expert.",
+    description: "10 ans d'expérience dans la valorisation et la transformation des espaces fonciers en Côte d'Ivoire. Lotissement, urbanisme et conseil expert.",
     image_url: heroLandPlot,
     button_text: "Découvrir nos services",
     button_link: "#services",
