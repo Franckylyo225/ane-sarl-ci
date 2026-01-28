@@ -16,8 +16,7 @@ import {
   Settings,
   ChevronDown,
   User,
-  MessageSquareQuote,
-  Briefcase
+  MessageSquareQuote
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import logoAneFull from '@/assets/logo-ane-full.png';
@@ -43,7 +42,6 @@ const navItems: NavItem[] = [
   { to: '/admin/slides', icon: Images, label: 'Slides Hero' },
   { to: '/admin/articles', icon: Newspaper, label: 'Actualités' },
   { to: '/admin/projects', icon: FolderKanban, label: 'Projets' },
-  { to: '/admin/services', icon: Briefcase, label: 'Services' },
   { to: '/admin/testimonials', icon: MessageSquareQuote, label: 'Témoignages' },
   { to: '/admin/settings', icon: Settings, label: 'Paramètres' },
 ];
