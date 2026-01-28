@@ -36,7 +36,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
-import { Loader2, Save, User, Lock, Users, Camera, Trash2, Shield, UserCog, History, RefreshCw } from 'lucide-react';
+import { Loader2, Save, User, Lock, Users, Camera, Trash2, Shield, UserCog, History, RefreshCw, Check, X, Clock, Crown } from 'lucide-react';
 import { logActivity, getActionLabel, getActionIcon } from '@/hooks/useActivityLogger';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -55,7 +55,8 @@ interface UserWithRole {
   id: string;
   email: string | null;
   full_name: string | null;
-  role: 'admin' | 'moderator' | null;
+  role: 'admin' | 'moderator' | 'super_admin' | null;
+  is_approved: boolean;
   created_at: string;
 }
 
@@ -72,7 +73,7 @@ interface ActivityLog {
 }
 
 export default function SettingsPage() {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isSuperAdmin } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Profile state
@@ -103,10 +104,10 @@ export default function SettingsPage() {
   useEffect(() => {
     fetchProfile();
     fetchActivityLogs();
-    if (isAdmin) {
+    if (isAdmin || isSuperAdmin) {
       fetchUsers();
     }
-  }, [user, isAdmin]);
+  }, [user, isAdmin, isSuperAdmin]);
 
   const fetchProfile = async () => {
     if (!user) return;
@@ -193,10 +194,10 @@ export default function SettingsPage() {
 
       if (profilesError) throw profilesError;
 
-      // Fetch all roles
+      // Fetch all roles with is_approved status
       const { data: roles, error: rolesError } = await supabase
         .from('user_roles')
-        .select('user_id, role');
+        .select('user_id, role, is_approved');
 
       if (rolesError) throw rolesError;
 
@@ -208,6 +209,7 @@ export default function SettingsPage() {
           email: p.email,
           full_name: p.full_name,
           role: userRole?.role || null,
+          is_approved: userRole?.is_approved ?? true, // Default to true if no role
           created_at: p.created_at,
         };
       });
@@ -353,7 +355,7 @@ export default function SettingsPage() {
     }
   };
 
-  const handleRoleChange = async (userId: string, newRole: 'admin' | 'moderator' | 'none') => {
+  const handleRoleChange = async (userId: string, newRole: 'admin' | 'moderator' | 'super_admin' | 'none') => {
     try {
       // First, remove existing role
       await supabase
@@ -363,9 +365,15 @@ export default function SettingsPage() {
 
       // Then add new role if not 'none'
       if (newRole !== 'none') {
+        // Super admin roles are auto-approved, others need approval by super_admin
+        const needsApproval = !isSuperAdmin && newRole !== 'super_admin';
         const { error } = await supabase
           .from('user_roles')
-          .insert({ user_id: userId, role: newRole });
+          .insert({ 
+            user_id: userId, 
+            role: newRole,
+            is_approved: isSuperAdmin ? true : false // Super admin can approve immediately
+          });
 
         if (error) throw error;
       }
@@ -386,6 +394,33 @@ export default function SettingsPage() {
     } catch (error) {
       console.error('Error updating role:', error);
       toast.error('Erreur lors de la mise à jour du rôle');
+    }
+  };
+
+  const handleApproveRole = async (userId: string, approve: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('user_roles')
+        .update({ is_approved: approve })
+        .eq('user_id', userId);
+
+      if (error) throw error;
+
+      const targetUser = users.find(u => u.id === userId);
+      await logActivity({ 
+        userId: user!.id, 
+        action: approve ? 'role_approved' : 'role_rejected',
+        details: {
+          target_user: targetUser?.email,
+          role: targetUser?.role
+        }
+      });
+
+      toast.success(approve ? 'Rôle approuvé' : 'Rôle rejeté');
+      fetchUsers();
+    } catch (error) {
+      console.error('Error approving role:', error);
+      toast.error('Erreur lors de l\'approbation du rôle');
     }
   };
 
@@ -414,7 +449,7 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-4' : 'grid-cols-3'}`}>
+        <TabsList className={`grid w-full ${isAdmin || isSuperAdmin ? 'grid-cols-4' : 'grid-cols-3'}`}>
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
             <span className="hidden sm:inline">Profil</span>
@@ -427,7 +462,7 @@ export default function SettingsPage() {
             <History className="h-4 w-4" />
             <span className="hidden sm:inline">Activité</span>
           </TabsTrigger>
-          {isAdmin && (
+          {(isAdmin || isSuperAdmin) && (
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Utilisateurs</span>
@@ -693,9 +728,66 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
 
-        {/* Users Tab (Admin Only) */}
-        {isAdmin && (
+        {/* Users Tab (Admin/Super Admin Only) */}
+        {(isAdmin || isSuperAdmin) && (
           <TabsContent value="users">
+            {/* Pending Approvals Section - Only for Super Admin */}
+            {isSuperAdmin && users.filter(u => u.role && !u.is_approved).length > 0 && (
+              <Card className="mb-6 border-orange-200 bg-orange-50/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-orange-700">
+                    <Clock className="h-5 w-5" />
+                    Approbations en attente
+                  </CardTitle>
+                  <CardDescription className="text-orange-600">
+                    Ces utilisateurs ont demandé un rôle administratif
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {users.filter(u => u.role && !u.is_approved).map((u) => (
+                      <div key={u.id} className="flex items-center justify-between p-3 rounded-lg bg-background border">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-10 w-10">
+                            <AvatarFallback className="text-sm">
+                              {u.full_name?.[0]?.toUpperCase() || u.email?.[0]?.toUpperCase() || 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{u.full_name || 'Sans nom'}</p>
+                            <p className="text-sm text-muted-foreground">{u.email}</p>
+                          </div>
+                          <Badge variant="outline" className="ml-2">
+                            Demande: {u.role === 'admin' ? 'Admin' : u.role === 'moderator' ? 'Modérateur' : u.role === 'super_admin' ? 'Super Admin' : u.role}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-green-600 border-green-600 hover:bg-green-50"
+                            onClick={() => handleApproveRole(u.id, true)}
+                          >
+                            <Check className="h-4 w-4 mr-1" />
+                            Approuver
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 border-red-600 hover:bg-red-50"
+                            onClick={() => handleApproveRole(u.id, false)}
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Rejeter
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -719,6 +811,7 @@ export default function SettingsPage() {
                           <TableHead>Utilisateur</TableHead>
                           <TableHead>Email</TableHead>
                           <TableHead>Rôle</TableHead>
+                          <TableHead>Statut</TableHead>
                           <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -741,6 +834,12 @@ export default function SettingsPage() {
                               {u.email}
                             </TableCell>
                             <TableCell>
+                              {u.role === 'super_admin' && (
+                                <Badge className="bg-amber-500">
+                                  <Crown className="h-3 w-3 mr-1" />
+                                  Super Admin
+                                </Badge>
+                              )}
                               {u.role === 'admin' && (
                                 <Badge className="bg-primary">
                                   <Shield className="h-3 w-3 mr-1" />
@@ -757,19 +856,39 @@ export default function SettingsPage() {
                                 <Badge variant="outline">Utilisateur</Badge>
                               )}
                             </TableCell>
+                            <TableCell>
+                              {u.role ? (
+                                u.is_approved ? (
+                                  <Badge variant="outline" className="text-green-600 border-green-600">
+                                    <Check className="h-3 w-3 mr-1" />
+                                    Approuvé
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline" className="text-orange-600 border-orange-600">
+                                    <Clock className="h-3 w-3 mr-1" />
+                                    En attente
+                                  </Badge>
+                                )
+                              ) : (
+                                <span className="text-muted-foreground text-sm">-</span>
+                              )}
+                            </TableCell>
                             <TableCell className="text-right">
                               {u.id !== user?.id ? (
                                 <Select
                                   value={u.role || 'none'}
                                   onValueChange={(value) => handleRoleChange(u.id, value as any)}
                                 >
-                                  <SelectTrigger className="w-32">
+                                  <SelectTrigger className="w-36">
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectItem value="none">Utilisateur</SelectItem>
                                     <SelectItem value="moderator">Modérateur</SelectItem>
                                     <SelectItem value="admin">Admin</SelectItem>
+                                    {isSuperAdmin && (
+                                      <SelectItem value="super_admin">Super Admin</SelectItem>
+                                    )}
                                   </SelectContent>
                                 </Select>
                               ) : (

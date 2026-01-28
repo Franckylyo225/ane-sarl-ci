@@ -10,6 +10,7 @@ interface AuthContextType {
   isRolesLoading: boolean;
   isAdmin: boolean;
   isModerator: boolean;
+  isSuperAdmin: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -24,10 +25,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isRolesLoading, setIsRolesLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isModerator, setIsModerator] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   const checkUserRoles = async (userId: string) => {
     setIsRolesLoading(true);
     try {
+      // Check for super_admin role
+      const { data: superAdminData } = await supabase.rpc('is_super_admin', {
+        _user_id: userId
+      });
+      setIsSuperAdmin(!!superAdminData);
+
       const { data: adminData } = await supabase.rpc('has_role', {
         _user_id: userId,
         _role: 'admin'
@@ -43,6 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Error checking roles:', error);
       setIsAdmin(false);
       setIsModerator(false);
+      setIsSuperAdmin(false);
     } finally {
       setIsRolesLoading(false);
     }
@@ -62,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           setIsAdmin(false);
           setIsModerator(false);
+          setIsSuperAdmin(false);
         }
       }
     );
@@ -108,6 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null);
     setIsAdmin(false);
     setIsModerator(false);
+    setIsSuperAdmin(false);
   };
 
   return (
@@ -118,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isRolesLoading,
       isAdmin,
       isModerator,
+      isSuperAdmin,
       signIn,
       signUp,
       signOut

@@ -16,7 +16,9 @@ export type ActivityAction =
   | 'slide_created'
   | 'slide_updated'
   | 'slide_deleted'
-  | 'role_changed';
+  | 'role_changed'
+  | 'role_approved'
+  | 'role_rejected';
 
 interface LogActivityParams {
   userId: string;
@@ -61,6 +63,8 @@ export function getActionLabel(action: string): string {
     slide_updated: 'Slide modifié',
     slide_deleted: 'Slide supprimé',
     role_changed: 'Rôle modifié',
+    role_approved: 'Rôle approuvé',
+    role_rejected: 'Rôle rejeté',
   };
   return labels[action] || action;
 }
@@ -83,6 +87,8 @@ export function getActionIcon(action: string): string {
     slide_updated: '✏️',
     slide_deleted: '🗑️',
     role_changed: '👥',
+    role_approved: '✅',
+    role_rejected: '❌',
   };
   return icons[action] || '📋';
 }
