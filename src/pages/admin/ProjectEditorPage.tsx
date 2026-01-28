@@ -180,9 +180,14 @@ export default function ProjectEditorPage() {
     setIsSaving(true);
 
     try {
+      const projectData = {
+        ...formData,
+        completed_at: formData.completed_at || null,
+      };
+
       if (isNew) {
         const { data, error } = await supabase.from('projects').insert({
-          ...formData,
+          ...projectData,
           author_id: user?.id,
         }).select().single();
 
@@ -204,7 +209,7 @@ export default function ProjectEditorPage() {
       } else {
         const { error } = await supabase
           .from('projects')
-          .update(formData)
+          .update(projectData)
           .eq('id', id);
 
         if (error) throw error;
