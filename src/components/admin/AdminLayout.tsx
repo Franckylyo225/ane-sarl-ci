@@ -15,16 +15,10 @@ import {
   Images,
   Settings,
   ChevronDown,
-  ChevronRight,
   User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import logoAneFull from '@/assets/logo-ane-full.png';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,26 +36,13 @@ type NavItem = {
   exact?: boolean;
 };
 
-type NavGroup = {
-  label: string;
-  icon: React.ElementType;
-  items: NavItem[];
-};
-
-const simpleNavItems: NavItem[] = [
+const navItems: NavItem[] = [
   { to: '/admin', icon: LayoutDashboard, label: 'Tableau de bord', exact: true },
+  { to: '/admin/slides', icon: Images, label: 'Slides Hero' },
+  { to: '/admin/articles', icon: Newspaper, label: 'Actualités' },
+  { to: '/admin/projects', icon: FolderKanban, label: 'Projets' },
   { to: '/admin/settings', icon: Settings, label: 'Paramètres' },
 ];
-
-const cmsNavGroup: NavGroup = {
-  label: 'CMS',
-  icon: Settings,
-  items: [
-    { to: '/admin/slides', icon: Images, label: 'Slides Hero' },
-    { to: '/admin/articles', icon: Newspaper, label: 'Actualités' },
-    { to: '/admin/projects', icon: FolderKanban, label: 'Projets' },
-  ],
-};
 
 export default function AdminLayout() {
   const { user, isLoading, isRolesLoading, isAdmin, isModerator, signOut } = useAuth();
@@ -69,10 +50,6 @@ export default function AdminLayout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profile, setProfile] = useState<{ full_name: string | null; email: string | null; avatar_url: string | null } | null>(null);
-  
-  // Check if current path is within CMS group
-  const isCmsActive = cmsNavGroup.items.some(item => location.pathname.startsWith(item.to));
-  const [cmsOpen, setCmsOpen] = useState(isCmsActive);
 
   // Fetch user profile
   useEffect(() => {
@@ -100,13 +77,6 @@ export default function AdminLayout() {
       navigate('/');
     }
   }, [isAdmin, isModerator, isLoading, isRolesLoading, user, navigate]);
-
-  // Keep CMS group open when navigating to a CMS page
-  useEffect(() => {
-    if (isCmsActive && !cmsOpen) {
-      setCmsOpen(true);
-    }
-  }, [isCmsActive, cmsOpen]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -213,31 +183,7 @@ export default function AdminLayout() {
           </div>
 
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-            {/* Simple nav items */}
-            {simpleNavItems.map((item) => renderNavItem(item, () => setSidebarOpen(false)))}
-
-            {/* CMS Group */}
-            <Collapsible open={cmsOpen} onOpenChange={setCmsOpen}>
-              <CollapsibleTrigger className="w-full">
-                <div className={cn(
-                  "flex items-center justify-between px-3 py-2 rounded-lg transition-colors cursor-pointer",
-                  isCmsActive ? "bg-muted" : "hover:bg-muted"
-                )}>
-                  <div className="flex items-center gap-3">
-                    <cmsNavGroup.icon className="h-5 w-5" />
-                    <span className="font-medium">{cmsNavGroup.label}</span>
-                  </div>
-                  {cmsOpen ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
-                  )}
-                </div>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="pl-4 mt-1 space-y-1">
-                {cmsNavGroup.items.map((item) => renderNavItem(item, () => setSidebarOpen(false)))}
-              </CollapsibleContent>
-            </Collapsible>
+            {navItems.map((item) => renderNavItem(item, () => setSidebarOpen(false)))}
           </nav>
 
           <div className="p-4 border-t space-y-2">
