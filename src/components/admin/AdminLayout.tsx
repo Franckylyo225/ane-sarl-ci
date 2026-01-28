@@ -33,7 +33,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type NavItem = {
   to: string;
@@ -50,7 +50,7 @@ type NavGroup = {
 
 const simpleNavItems: NavItem[] = [
   { to: '/admin', icon: LayoutDashboard, label: 'Tableau de bord', exact: true },
-  { to: '/admin/profile', icon: Settings, label: 'Paramètres' },
+  { to: '/admin/settings', icon: Settings, label: 'Paramètres' },
 ];
 
 const cmsNavGroup: NavGroup = {
@@ -68,7 +68,7 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [profile, setProfile] = useState<{ full_name: string | null; email: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ full_name: string | null; email: string | null; avatar_url: string | null } | null>(null);
   
   // Check if current path is within CMS group
   const isCmsActive = cmsNavGroup.items.some(item => location.pathname.startsWith(item.to));
@@ -80,7 +80,7 @@ export default function AdminLayout() {
       if (user) {
         const { data } = await supabase
           .from('profiles')
-          .select('full_name, email')
+          .select('full_name, email, avatar_url')
           .eq('id', user.id)
           .maybeSingle();
         setProfile(data);
@@ -171,6 +171,7 @@ export default function AdminLayout() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
               <Avatar className="h-8 w-8">
+                <AvatarImage src={profile?.avatar_url || undefined} />
                 <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                   {initials}
                 </AvatarFallback>
@@ -186,7 +187,7 @@ export default function AdminLayout() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to="/admin/profile" className="cursor-pointer">
+              <Link to="/admin/settings" className="cursor-pointer">
                 <User className="mr-2 h-4 w-4" />
                 Mon profil
               </Link>
@@ -275,6 +276,7 @@ export default function AdminLayout() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-3 h-auto py-2 px-3">
                 <Avatar className="h-8 w-8">
+                  <AvatarImage src={profile?.avatar_url || undefined} />
                   <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                     {initials}
                   </AvatarFallback>
@@ -295,7 +297,7 @@ export default function AdminLayout() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/admin/profile" className="cursor-pointer">
+                <Link to="/admin/settings" className="cursor-pointer">
                   <User className="mr-2 h-4 w-4" />
                   Mon profil
                 </Link>
