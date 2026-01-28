@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Select,
   SelectContent,
@@ -35,7 +36,10 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
-import { Loader2, Save, User, Lock, Users, Camera, Trash2, Shield, UserCog } from 'lucide-react';
+import { Loader2, Save, User, Lock, Users, Camera, Trash2, Shield, UserCog, History, RefreshCw } from 'lucide-react';
+import { logActivity, getActionLabel, getActionIcon } from '@/hooks/useActivityLogger';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 interface Profile {
   id: string;
@@ -53,6 +57,18 @@ interface UserWithRole {
   full_name: string | null;
   role: 'admin' | 'moderator' | null;
   created_at: string;
+}
+
+interface ActivityLog {
+  id: string;
+  user_id: string;
+  action: string;
+  details: any;
+  ip_address: string | null;
+  user_agent: string | null;
+  created_at: string;
+  user_email?: string | null;
+  user_name?: string | null;
 }
 
 export default function SettingsPage() {
@@ -80,8 +96,13 @@ export default function SettingsPage() {
   const [users, setUsers] = useState<UserWithRole[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
+  // Activity logs state
+  const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
+  const [loadingActivity, setLoadingActivity] = useState(false);
+
   useEffect(() => {
     fetchProfile();
+    fetchActivityLogs();
     if (isAdmin) {
       fetchUsers();
     }
@@ -110,6 +131,55 @@ export default function SettingsPage() {
       toast.error('Erreur lors du chargement du profil');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchActivityLogs = async () => {
+    if (!user) return;
+    
+    setLoadingActivity(true);
+    try {
+      // For admins, fetch all activity with user info
+      if (isAdmin) {
+        const { data: logs, error } = await supabase
+          .from('activity_logs')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(100);
+
+        if (error) throw error;
+
+        // Fetch profiles to get user names
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, email, full_name');
+
+        const logsWithUsers = (logs || []).map(log => {
+          const profile = profiles?.find(p => p.id === log.user_id);
+          return {
+            ...log,
+            user_email: profile?.email,
+            user_name: profile?.full_name,
+          };
+        });
+
+        setActivityLogs(logsWithUsers);
+      } else {
+        // For non-admins, fetch only their own activity
+        const { data: logs, error } = await supabase
+          .from('activity_logs')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(50);
+
+        if (error) throw error;
+        setActivityLogs(logs || []);
+      }
+    } catch (error) {
+      console.error('Error fetching activity logs:', error);
+    } finally {
+      setLoadingActivity(false);
     }
   };
 
@@ -172,6 +242,7 @@ export default function SettingsPage() {
 
       if (error) throw error;
 
+      await logActivity({ userId: user.id, action: 'profile_updated' });
       toast.success('Profil mis à jour avec succès');
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -215,6 +286,7 @@ export default function SettingsPage() {
         .getPublicUrl(filePath);
 
       setAvatarUrl(`${publicUrl}?t=${Date.now()}`);
+      await logActivity({ userId: user.id, action: 'avatar_updated' });
       toast.success('Avatar mis à jour');
     } catch (error) {
       console.error('Error uploading avatar:', error);
@@ -237,6 +309,7 @@ export default function SettingsPage() {
       if (error) console.warn('Error removing avatar files:', error);
 
       setAvatarUrl(null);
+      await logActivity({ userId: user.id, action: 'avatar_removed' });
       toast.success('Avatar supprimé');
     } catch (error) {
       console.error('Error removing avatar:', error);
@@ -267,6 +340,7 @@ export default function SettingsPage() {
 
       if (error) throw error;
 
+      await logActivity({ userId: user!.id, action: 'password_changed' });
       toast.success('Mot de passe modifié avec succès');
       setCurrentPassword('');
       setNewPassword('');
@@ -295,6 +369,17 @@ export default function SettingsPage() {
 
         if (error) throw error;
       }
+
+      // Get target user info for logging
+      const targetUser = users.find(u => u.id === userId);
+      await logActivity({ 
+        userId: user!.id, 
+        action: 'role_changed',
+        details: {
+          target_user: targetUser?.email,
+          new_role: newRole === 'none' ? 'utilisateur' : newRole
+        }
+      });
 
       toast.success('Rôle mis à jour');
       fetchUsers();
@@ -329,7 +414,7 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-4' : 'grid-cols-3'}`}>
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
             <span className="hidden sm:inline">Profil</span>
@@ -337,6 +422,10 @@ export default function SettingsPage() {
           <TabsTrigger value="security" className="flex items-center gap-2">
             <Lock className="h-4 w-4" />
             <span className="hidden sm:inline">Sécurité</span>
+          </TabsTrigger>
+          <TabsTrigger value="activity" className="flex items-center gap-2">
+            <History className="h-4 w-4" />
+            <span className="hidden sm:inline">Activité</span>
           </TabsTrigger>
           {isAdmin && (
             <TabsTrigger value="users" className="flex items-center gap-2">
@@ -526,6 +615,80 @@ export default function SettingsPage() {
                   )}
                 </Button>
               </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Activity Tab */}
+        <TabsContent value="activity">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <History className="h-5 w-5" />
+                    Historique des activités
+                  </CardTitle>
+                  <CardDescription>
+                    {isAdmin ? 'Toutes les activités des utilisateurs' : 'Vos activités récentes'}
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={fetchActivityLogs}
+                  disabled={loadingActivity}
+                >
+                  <RefreshCw className={`h-4 w-4 mr-2 ${loadingActivity ? 'animate-spin' : ''}`} />
+                  Actualiser
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {loadingActivity ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                </div>
+              ) : activityLogs.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  Aucune activité enregistrée
+                </div>
+              ) : (
+                <ScrollArea className="h-[400px] pr-4">
+                  <div className="space-y-4">
+                    {activityLogs.map((log) => (
+                      <div key={log.id} className="flex items-start gap-4 p-3 rounded-lg bg-muted/50">
+                        <div className="text-2xl">{getActionIcon(log.action)}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-medium">{getActionLabel(log.action)}</span>
+                            {isAdmin && log.user_name && (
+                              <Badge variant="outline" className="text-xs">
+                                {log.user_name}
+                              </Badge>
+                            )}
+                            {isAdmin && !log.user_name && log.user_email && (
+                              <Badge variant="outline" className="text-xs">
+                                {log.user_email}
+                              </Badge>
+                            )}
+                          </div>
+                          {log.details && Object.keys(log.details).length > 0 && (
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {log.details.title && `"${log.details.title}"`}
+                              {log.details.target_user && ` pour ${log.details.target_user}`}
+                              {log.details.new_role && ` → ${log.details.new_role}`}
+                            </p>
+                          )}
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {format(new Date(log.created_at), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
