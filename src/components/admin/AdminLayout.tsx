@@ -50,6 +50,7 @@ type NavGroup = {
 
 const simpleNavItems: NavItem[] = [
   { to: '/admin', icon: LayoutDashboard, label: 'Tableau de bord', exact: true },
+  { to: '/admin/profile', icon: Settings, label: 'Paramètres' },
 ];
 
 const cmsNavGroup: NavGroup = {
