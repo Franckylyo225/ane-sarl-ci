@@ -247,6 +247,51 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          archived: boolean | null
+          author_id: string | null
+          created_at: string
+          description: string | null
+          display_order: number | null
+          features: string[] | null
+          href: string | null
+          icon: string
+          id: string
+          published: boolean | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          archived?: boolean | null
+          author_id?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          features?: string[] | null
+          href?: string | null
+          icon?: string
+          id?: string
+          published?: boolean | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          archived?: boolean | null
+          author_id?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          features?: string[] | null
+          href?: string | null
+          icon?: string
+          id?: string
+          published?: boolean | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       testimonials: {
         Row: {
           archived: boolean | null
