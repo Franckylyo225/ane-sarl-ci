@@ -19,6 +19,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { logActivity } from '@/hooks/useActivityLogger';
 
 interface HeroSlide {
   id: string;
@@ -84,6 +85,9 @@ export default function SlidesListPage() {
   };
 
   const deleteSlide = async (id: string) => {
+    const slideToDelete = slides.find(s => s.id === id);
+    const { data: { user } } = await supabase.auth.getUser();
+
     const { error } = await supabase
       .from('hero_slides')
       .delete()
@@ -96,6 +100,13 @@ export default function SlidesListPage() {
         variant: 'destructive',
       });
     } else {
+      if (user && slideToDelete) {
+        await logActivity({
+          userId: user.id,
+          action: 'slide_deleted',
+          details: { slideId: id, headline: slideToDelete.headline },
+        });
+      }
       setSlides(slides.filter(s => s.id !== id));
       toast({
         title: 'Succès',

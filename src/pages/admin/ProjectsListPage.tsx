@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tables } from '@/integrations/supabase/types';
+import { logActivity } from '@/hooks/useActivityLogger';
 
 type Project = Tables<'projects'>;
 
@@ -86,6 +87,9 @@ export default function ProjectsListPage() {
   const handleDelete = async () => {
     if (!deleteId) return;
 
+    const projectToDelete = projects.find(p => p.id === deleteId);
+    const { data: { user } } = await supabase.auth.getUser();
+
     const { error } = await supabase
       .from('projects')
       .delete()
@@ -98,6 +102,13 @@ export default function ProjectsListPage() {
         description: 'Impossible de supprimer le projet',
       });
     } else {
+      if (user && projectToDelete) {
+        await logActivity({
+          userId: user.id,
+          action: 'project_deleted',
+          details: { projectId: deleteId, title: projectToDelete.title },
+        });
+      }
       toast({
         title: 'Succès',
         description: 'Projet supprimé',

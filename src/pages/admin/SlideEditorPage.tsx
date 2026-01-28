@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ImageUpload from '@/components/admin/ImageUpload';
+import { logActivity } from '@/hooks/useActivityLogger';
 
 interface SlideForm {
   badge: string;
@@ -109,10 +110,12 @@ export default function SlideEditorPage() {
     };
 
     let error;
+    let slideId = id;
 
     if (isNew) {
-      const result = await supabase.from('hero_slides').insert(payload);
+      const result = await supabase.from('hero_slides').insert(payload).select().single();
       error = result.error;
+      if (result.data) slideId = result.data.id;
     } else {
       const result = await supabase
         .from('hero_slides')
@@ -130,6 +133,14 @@ export default function SlideEditorPage() {
         variant: 'destructive',
       });
     } else {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await logActivity({
+          userId: user.id,
+          action: isNew ? 'slide_created' : 'slide_updated',
+          details: { slideId, headline: form.headline },
+        });
+      }
       toast({
         title: 'Succès',
         description: isNew ? 'Slide créée' : 'Slide mise à jour',
