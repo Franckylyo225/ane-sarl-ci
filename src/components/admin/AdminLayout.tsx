@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { 
   LayoutDashboard, 
@@ -14,7 +15,8 @@ import {
   Images,
   Settings,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import logoAneFull from '@/assets/logo-ane-full.png';
@@ -23,6 +25,15 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 type NavItem = {
   to: string;
@@ -56,10 +67,26 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [profile, setProfile] = useState<{ full_name: string | null; email: string | null } | null>(null);
   
   // Check if current path is within CMS group
   const isCmsActive = cmsNavGroup.items.some(item => location.pathname.startsWith(item.to));
   const [cmsOpen, setCmsOpen] = useState(isCmsActive);
+
+  // Fetch user profile
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', user.id)
+          .maybeSingle();
+        setProfile(data);
+      }
+    };
+    fetchProfile();
+  }, [user]);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -120,18 +147,56 @@ export default function AdminLayout() {
     );
   };
 
+  const displayName = profile?.full_name || user?.email?.split('@')[0] || 'Admin';
+  const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Mobile header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-background border-b z-50 flex items-center px-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
-          {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
-        <span className="ml-4 font-semibold">Administration</span>
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-background border-b z-50 flex items-center justify-between px-4">
+        <div className="flex items-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+          <span className="ml-4 font-semibold">Administration</span>
+        </div>
+        
+        {/* Mobile user menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <Avatar className="h-8 w-8">
+                <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium">{displayName}</p>
+                <p className="text-xs text-muted-foreground">{profile?.email || user?.email}</p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link to="/admin/profile" className="cursor-pointer">
+                <User className="mr-2 h-4 w-4" />
+                Mon profil
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
+              <LogOut className="mr-2 h-4 w-4" />
+              Déconnexion
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Sidebar */}
@@ -202,8 +267,48 @@ export default function AdminLayout() {
       )}
 
       {/* Main content */}
-      <main className="lg:ml-64 pt-16 lg:pt-0 min-h-screen">
-        <div className="p-6">
+      <main className="lg:ml-64 pt-16 min-h-screen">
+        {/* Desktop header */}
+        <div className="hidden lg:flex fixed top-0 left-64 right-0 h-16 bg-background border-b z-30 items-center justify-end px-6">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-3 h-auto py-2 px-3">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-medium">{displayName}</span>
+                  <span className="text-xs text-muted-foreground">{isAdmin ? 'Administrateur' : 'Modérateur'}</span>
+                </div>
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium">{displayName}</p>
+                  <p className="text-xs text-muted-foreground">{profile?.email || user?.email}</p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/admin/profile" className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  Mon profil
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
+                <LogOut className="mr-2 h-4 w-4" />
+                Déconnexion
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <div className="p-6 lg:pt-8">
           <Outlet />
         </div>
       </main>
