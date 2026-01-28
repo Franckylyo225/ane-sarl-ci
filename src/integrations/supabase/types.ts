@@ -46,6 +46,7 @@ export type Database = {
       }
       articles: {
         Row: {
+          archived: boolean | null
           author_id: string | null
           content: string
           cover_image_url: string | null
@@ -57,6 +58,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          archived?: boolean | null
           author_id?: string | null
           content: string
           cover_image_url?: string | null
@@ -68,6 +70,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          archived?: boolean | null
           author_id?: string | null
           content?: string
           cover_image_url?: string | null
