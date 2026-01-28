@@ -45,7 +45,7 @@ const navItems: NavItem[] = [
 ];
 
 export default function AdminLayout() {
-  const { user, isLoading, isRolesLoading, isAdmin, isModerator, signOut } = useAuth();
+  const { user, isLoading, isRolesLoading, isAdmin, isModerator, isSuperAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -73,10 +73,10 @@ export default function AdminLayout() {
   }, [user, isLoading, navigate]);
 
   useEffect(() => {
-    if (!isLoading && !isRolesLoading && user && !isAdmin && !isModerator) {
+    if (!isLoading && !isRolesLoading && user && !isAdmin && !isModerator && !isSuperAdmin) {
       navigate('/');
     }
-  }, [isAdmin, isModerator, isLoading, isRolesLoading, user, navigate]);
+  }, [isAdmin, isModerator, isSuperAdmin, isLoading, isRolesLoading, user, navigate]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -91,7 +91,7 @@ export default function AdminLayout() {
     );
   }
 
-  if (!user || (!isAdmin && !isModerator)) {
+  if (!user || (!isAdmin && !isModerator && !isSuperAdmin)) {
     return null;
   }
 
@@ -229,7 +229,7 @@ export default function AdminLayout() {
                 </Avatar>
                 <div className="flex flex-col items-start">
                   <span className="text-sm font-medium">{displayName}</span>
-                  <span className="text-xs text-muted-foreground">{isAdmin ? 'Administrateur' : 'Modérateur'}</span>
+                  <span className="text-xs text-muted-foreground">{isSuperAdmin ? 'Super Admin' : isAdmin ? 'Administrateur' : 'Modérateur'}</span>
                 </div>
                 <ChevronDown className="h-4 w-4 text-muted-foreground" />
               </Button>
