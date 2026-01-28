@@ -160,7 +160,18 @@ export default function ProjectEditorPage() {
   };
 
   const deleteImage = async (imageId: string) => {
-    await supabase.from('project_images').delete().eq('id', imageId);
+    const { error } = await supabase.from('project_images').delete().eq('id', imageId);
+    
+    if (error) {
+      console.error('Delete error:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erreur',
+        description: 'Impossible de supprimer l\'image. Vérifiez vos permissions.',
+      });
+      return;
+    }
+    
     setImages(images.filter(img => img.id !== imageId));
     toast({ title: 'Image supprimée' });
   };
