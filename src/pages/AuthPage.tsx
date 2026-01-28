@@ -120,26 +120,15 @@ export default function AuthPage() {
         
         {/* Content overlay */}
         <div className="relative z-10 flex flex-col justify-between p-12 text-primary-foreground">
-          {/* Logo & Back link */}
+          {/* Back link */}
           <div>
             <Link 
               to="/" 
-              className="inline-flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition-colors mb-8"
+              className="inline-flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Retour au site
             </Link>
-            
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-copper rounded-lg flex items-center justify-center">
-                <span className="text-accent-foreground font-display font-bold text-xl">A</span>
-              </div>
-              <div>
-                <span className="font-display font-bold text-2xl">
-                  ANE <span className="text-copper">SARL</span>
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Welcome Message */}
