@@ -7,8 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
-import { Loader2, Lock, ArrowLeft, TreePine, Shield, Users } from 'lucide-react';
+import { Loader2, ArrowLeft, TreePine, Shield, Users } from 'lucide-react';
 import heroForestRoad from '@/assets/hero-forest-road.jpg';
+import logoAneFull from '@/assets/logo-ane-full.png';
 
 const authSchema = z.object({
   email: z.string().email('Email invalide'),
@@ -196,11 +197,13 @@ export default function AuthPage() {
         {/* Form container */}
         <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
           <div className="w-full max-w-md">
-            {/* Header */}
+            {/* Logo & Header */}
             <div className="text-center mb-8">
-              <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center">
-                <Lock className="h-7 w-7 text-primary" />
-              </div>
+              <img 
+                src={logoAneFull} 
+                alt="ANE SARL" 
+                className="h-16 mx-auto mb-6"
+              />
               <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
                 Espace Administration
               </h2>
