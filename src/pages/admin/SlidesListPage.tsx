@@ -173,13 +173,25 @@ export default function SlidesListPage() {
                     </TableCell>
                     <TableCell>
                       {slide.image_url ? (
-                        <img
-                          src={slide.image_url}
-                          alt={slide.headline}
-                          className="w-20 h-12 object-cover rounded"
-                        />
+                        <div className="relative group">
+                          <img
+                            src={slide.image_url}
+                            alt={slide.headline}
+                            className="w-24 h-14 object-cover rounded-md border border-border shadow-sm"
+                          />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center">
+                            <a
+                              href={slide.image_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-white text-xs hover:underline"
+                            >
+                              Agrandir
+                            </a>
+                          </div>
+                        </div>
                       ) : (
-                        <div className="w-20 h-12 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
+                        <div className="w-24 h-14 bg-muted rounded-md border border-dashed border-muted-foreground/30 flex items-center justify-center text-xs text-muted-foreground">
                           Pas d'image
                         </div>
                       )}
