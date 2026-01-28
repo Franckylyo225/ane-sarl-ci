@@ -12,6 +12,7 @@ import { Loader2, ArrowLeft, Save } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import RichTextEditor from '@/components/admin/RichTextEditor';
 import ImageUpload from '@/components/admin/ImageUpload';
+import { logActivity } from '@/hooks/useActivityLogger';
 
 export default function ArticleEditorPage() {
   const { id } = useParams();
@@ -87,12 +88,20 @@ export default function ArticleEditorPage() {
 
     try {
       if (isNew) {
-        const { error } = await supabase.from('articles').insert({
+        const { data, error } = await supabase.from('articles').insert({
           ...formData,
           author_id: user?.id,
-        });
+        }).select().single();
 
         if (error) throw error;
+
+        if (user) {
+          await logActivity({
+            userId: user.id,
+            action: 'article_created',
+            details: { articleId: data.id, title: formData.title },
+          });
+        }
 
         toast({
           title: 'Succès',
@@ -105,6 +114,14 @@ export default function ArticleEditorPage() {
           .eq('id', id);
 
         if (error) throw error;
+
+        if (user) {
+          await logActivity({
+            userId: user.id,
+            action: 'article_updated',
+            details: { articleId: id, title: formData.title },
+          });
+        }
 
         toast({
           title: 'Succès',

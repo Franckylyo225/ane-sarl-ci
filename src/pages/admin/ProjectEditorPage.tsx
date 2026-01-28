@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, ArrowLeft, Save, Upload, X, Star, GripVertical } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tables } from '@/integrations/supabase/types';
+import { logActivity } from '@/hooks/useActivityLogger';
 
 type ProjectImage = Tables<'project_images'>;
 
@@ -187,6 +188,14 @@ export default function ProjectEditorPage() {
 
         if (error) throw error;
 
+        if (user) {
+          await logActivity({
+            userId: user.id,
+            action: 'project_created',
+            details: { projectId: data.id, title: formData.title },
+          });
+        }
+
         toast({
           title: 'Succès',
           description: 'Projet créé. Vous pouvez maintenant ajouter des images.',
@@ -199,6 +208,14 @@ export default function ProjectEditorPage() {
           .eq('id', id);
 
         if (error) throw error;
+
+        if (user) {
+          await logActivity({
+            userId: user.id,
+            action: 'project_updated',
+            details: { projectId: id, title: formData.title },
+          });
+        }
 
         toast({
           title: 'Succès',

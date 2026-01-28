@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tables } from '@/integrations/supabase/types';
+import { logActivity } from '@/hooks/useActivityLogger';
 
 type Article = Tables<'articles'>;
 
@@ -85,6 +86,9 @@ export default function ArticlesListPage() {
   const handleDelete = async () => {
     if (!deleteId) return;
 
+    const articleToDelete = articles.find(a => a.id === deleteId);
+    const { data: { user } } = await supabase.auth.getUser();
+
     const { error } = await supabase
       .from('articles')
       .delete()
@@ -97,6 +101,13 @@ export default function ArticlesListPage() {
         description: 'Impossible de supprimer l\'article',
       });
     } else {
+      if (user && articleToDelete) {
+        await logActivity({
+          userId: user.id,
+          action: 'article_deleted',
+          details: { articleId: deleteId, title: articleToDelete.title },
+        });
+      }
       toast({
         title: 'Succès',
         description: 'Article supprimé',
