@@ -9,6 +9,7 @@ import {
   Mail,
   ArrowUp
 } from "lucide-react";
+import logoAne from "@/assets/logo-ane-full.png";
 
 const quickLinks = [
   { name: "Accueil", href: "/" },
@@ -47,16 +48,13 @@ export function Footer() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Company Info */}
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-copper rounded-lg flex items-center justify-center">
-                <span className="text-accent-foreground font-display font-bold text-xl">A</span>
-              </div>
-              <div>
-                <span className="font-display font-bold text-xl">
-                  ANE <span className="text-copper">SARL</span>
-                </span>
-              </div>
-            </div>
+            <Link to="/" className="flex items-center gap-3 mb-6">
+              <img 
+                src={logoAne} 
+                alt="ANE SARL" 
+                className="h-12 w-auto"
+              />
+            </Link>
             <p className="text-primary-foreground/70 mb-6 leading-relaxed">
               Votre partenaire de confiance pour un aménagement durable 
               des terres et forêts en Côte d'Ivoire.
