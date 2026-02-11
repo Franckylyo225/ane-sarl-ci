@@ -10,14 +10,6 @@ export function VideoSection() {
           ref={sectionReveal.ref}
           className={`scroll-reveal ${sectionReveal.isVisible ? "visible" : ""}`}
         >
-          <div className="text-center mb-10">
-            <span className="inline-block text-primary font-semibold tracking-wider uppercase text-sm mb-3">
-              Découvrez ANE
-            </span>
-            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
-              Notre <span className="text-primary">vidéo</span> de présentation
-            </h2>
-          </div>
 
           <div className="max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-xl border border-border">
             <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
