@@ -49,6 +49,7 @@ export default function ProjectEditorPage() {
     location: '',
     client: '',
     completed_at: '',
+    link: '',
     published: false,
   });
 
@@ -81,6 +82,7 @@ export default function ProjectEditorPage() {
       location: projectRes.data.location || '',
       client: projectRes.data.client || '',
       completed_at: projectRes.data.completed_at || '',
+      link: (projectRes.data as any).link || '',
       published: projectRes.data.published || false,
     });
 
@@ -194,6 +196,7 @@ export default function ProjectEditorPage() {
       const projectData = {
         ...formData,
         completed_at: formData.completed_at || null,
+        link: formData.link || null,
       };
 
       if (isNew) {
@@ -338,6 +341,17 @@ export default function ProjectEditorPage() {
                       onChange={(e) => setFormData({ ...formData, completed_at: e.target.value })}
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="link">Lien du projet</Label>
+                  <Input
+                    id="link"
+                    type="url"
+                    value={formData.link}
+                    onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                    placeholder="https://example.com"
+                  />
                 </div>
 
                 <div className="space-y-2">

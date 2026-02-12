@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Calendar, MapPin, ArrowLeft, User, Loader2, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Calendar, MapPin, ArrowLeft, User, Loader2, ChevronLeft, ChevronRight, X, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
@@ -277,6 +277,14 @@ export default function ProjectDetailPage() {
                   <p className="text-muted-foreground text-lg leading-relaxed">
                     {project.description}
                   </p>
+                  {(project as any).link && (
+                    <Button className="mt-4" asChild>
+                      <a href={(project as any).link} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Accéder au site du projet
+                      </a>
+                    </Button>
+                  )}
                 </div>
               )}
 
