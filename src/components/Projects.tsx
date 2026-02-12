@@ -193,10 +193,10 @@ export function Projects() {
                          href={(project as any).link} 
                          target="_blank" 
                          rel="noopener noreferrer"
-                         className="inline-flex items-center gap-2 text-copper font-medium hover:gap-3 transition-all"
+                         className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-full hover:bg-emerald-700 transition-colors"
                        >
+                         <ExternalLink className="w-3.5 h-3.5" />
                          Accéder au site
-                         <ExternalLink className="w-4 h-4" />
                        </a>
                      )}
                    </div>
