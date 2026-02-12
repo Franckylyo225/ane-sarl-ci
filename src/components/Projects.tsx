@@ -179,7 +179,7 @@ export function Projects() {
                   )}
 
                   {/* Links */}
-                   <div className="space-y-2">
+                   <div className="flex items-center justify-between pt-2">
                      <Link 
                        to={`/projets/${project.id}`}
                        className="inline-flex items-center gap-2 text-copper font-medium hover:gap-3 transition-all"
@@ -193,7 +193,7 @@ export function Projects() {
                          href={(project as any).link} 
                          target="_blank" 
                          rel="noopener noreferrer"
-                         className="block inline-flex items-center gap-2 text-copper font-medium hover:gap-3 transition-all"
+                         className="inline-flex items-center gap-2 text-copper font-medium hover:gap-3 transition-all"
                        >
                          Accéder au site
                          <ExternalLink className="w-4 h-4" />
