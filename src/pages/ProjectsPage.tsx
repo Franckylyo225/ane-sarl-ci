@@ -209,14 +209,28 @@ export default function ProjectsPage() {
                         </div>
                       )}
 
-                      {/* Link */}
-                      <Link 
-                        to={`/projets/${project.id}`}
-                        className="inline-flex items-center gap-2 text-copper font-medium hover:gap-3 transition-all"
-                      >
-                        Voir le projet
-                        <ExternalLink className="w-4 h-4" />
-                      </Link>
+                       {/* Link */}
+                       <div className="flex items-center justify-between pt-2">
+                         <Link 
+                           to={`/projets/${project.id}`}
+                           className="inline-flex items-center gap-2 text-copper font-medium hover:gap-3 transition-all"
+                         >
+                           Voir le projet
+                           <ExternalLink className="w-4 h-4" />
+                         </Link>
+                         
+                         {project.link && (
+                           <a 
+                             href={project.link} 
+                             target="_blank" 
+                             rel="noopener noreferrer"
+                             className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-full hover:bg-emerald-700 transition-colors"
+                           >
+                             <ExternalLink className="w-3.5 h-3.5" />
+                             Accéder au site
+                           </a>
+                         )}
+                       </div>
                     </div>
                   </div>
                 ))}
