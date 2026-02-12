@@ -178,15 +178,29 @@ export function Projects() {
                     </div>
                   )}
 
-                  {/* Link */}
-                  <Link 
-                    to={`/projets/${project.id}`}
-                    className="inline-flex items-center gap-2 text-copper font-medium hover:gap-3 transition-all"
-                  >
-                    Voir le projet
-                    <ExternalLink className="w-4 h-4" />
-                  </Link>
-                </div>
+                  {/* Links */}
+                   <div className="space-y-2">
+                     <Link 
+                       to={`/projets/${project.id}`}
+                       className="inline-flex items-center gap-2 text-copper font-medium hover:gap-3 transition-all"
+                     >
+                       Voir le projet
+                       <ExternalLink className="w-4 h-4" />
+                     </Link>
+                     
+                     {(project as any).link && (
+                       <a 
+                         href={(project as any).link} 
+                         target="_blank" 
+                         rel="noopener noreferrer"
+                         className="block inline-flex items-center gap-2 text-copper font-medium hover:gap-3 transition-all"
+                       >
+                         Accéder au site
+                         <ExternalLink className="w-4 h-4" />
+                       </a>
+                     )}
+                   </div>
+                 </div>
               </div>
             ))}
           </div>
