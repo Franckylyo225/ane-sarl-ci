@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { TreePine, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import serviceForestier from "@/assets/service-topographie-6.jpg";
 
 const features = [
   "Plans d'aménagement forestier",
@@ -71,8 +72,8 @@ export default function AmenagementForestierPage() {
                 </Button>
               </Link>
             </div>
-            <div className="bg-card rounded-2xl p-12 shadow-premium">
-              <TreePine className="w-32 h-32 text-primary/20 mx-auto" />
+            <div className="rounded-2xl overflow-hidden shadow-premium">
+              <img src={serviceForestier} alt="Équipe ANE SARL en intervention forestière" className="w-full h-full object-cover" />
             </div>
           </div>
         </div>

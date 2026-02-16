@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Building2, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import serviceBtp from "@/assets/service-topographie-3.jpg";
 
 const features = [
   "Construction de bâtiments",
@@ -70,8 +71,8 @@ export default function BtpPage() {
                 </Button>
               </Link>
             </div>
-            <div className="bg-card rounded-2xl p-12 shadow-premium">
-              <Building2 className="w-32 h-32 text-primary/20 mx-auto" />
+            <div className="rounded-2xl overflow-hidden shadow-premium">
+              <img src={serviceBtp} alt="Techniciens ANE SARL avec équipement de mesure sur chantier" className="w-full h-full object-cover" />
             </div>
           </div>
         </div>

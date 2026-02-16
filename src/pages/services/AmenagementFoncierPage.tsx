@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Map, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import serviceAmenagement from "@/assets/service-topographie-1.jpg";
 
 const features = [
   "Études d'urbanisme et de faisabilité",
@@ -72,8 +73,8 @@ export default function AmenagementFoncierPage() {
                 </Button>
               </Link>
             </div>
-            <div className="bg-card rounded-2xl p-12 shadow-premium">
-              <Map className="w-32 h-32 text-primary/20 mx-auto" />
+            <div className="rounded-2xl overflow-hidden shadow-premium">
+              <img src={serviceAmenagement} alt="Équipe ANE SARL sur le terrain avec équipement topographique" className="w-full h-full object-cover" />
             </div>
           </div>
         </div>
