@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Monitor, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import serviceInformatique from "@/assets/service-informatique.jpg";
 
 const features = [
   "Développement de sites web",
@@ -71,8 +72,8 @@ export default function InformatiquePage() {
                 </Button>
               </Link>
             </div>
-            <div className="bg-card rounded-2xl p-12 shadow-premium">
-              <Monitor className="w-32 h-32 text-primary/20 mx-auto" />
+            <div className="rounded-2xl overflow-hidden shadow-premium">
+              <img src={serviceInformatique} alt="Création de sites web et développement informatique" className="w-full h-full object-cover" />
             </div>
           </div>
         </div>
