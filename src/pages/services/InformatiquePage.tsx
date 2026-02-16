@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Monitor, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import serviceInformatique from "@/assets/service-informatique.jpg";
 
 const features = [
   "Développement de sites web",
