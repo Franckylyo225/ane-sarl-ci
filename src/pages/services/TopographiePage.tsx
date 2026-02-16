@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Compass, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import serviceTopographie from "@/assets/service-topographie-4.jpg";
 
 const features = [
   "Levés topographiques",
@@ -72,8 +73,8 @@ export default function TopographiePage() {
                 </Button>
               </Link>
             </div>
-            <div className="bg-card rounded-2xl p-12 shadow-premium">
-              <Compass className="w-32 h-32 text-primary/20 mx-auto" />
+            <div className="rounded-2xl overflow-hidden shadow-premium">
+              <img src={serviceTopographie} alt="Technicien topographe avec équipement de mesure" className="w-full h-full object-cover" />
             </div>
           </div>
         </div>

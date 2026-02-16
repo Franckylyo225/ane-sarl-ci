@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Globe, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import serviceGeomatique from "@/assets/service-topographie-2.jpg";
 
 const features = [
   "Conception de SIG",
@@ -71,8 +72,8 @@ export default function GeomatiquePage() {
                 </Button>
               </Link>
             </div>
-            <div className="bg-card rounded-2xl p-12 shadow-premium">
-              <Globe className="w-32 h-32 text-primary/20 mx-auto" />
+            <div className="rounded-2xl overflow-hidden shadow-premium">
+              <img src={serviceGeomatique} alt="Technicien géomètre avec équipement GPS sur le terrain" className="w-full h-full object-cover" />
             </div>
           </div>
         </div>
