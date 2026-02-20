@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Award, Users, Target, ArrowRight } from "lucide-react";
-import aboutImage from "@/assets/about-team.jpg";
+import aboutImage from "@/assets/about-ane.png";
 import { useScrollReveal, useScrollRevealMultiple } from "@/hooks/useScrollReveal";
 
 const values = [
