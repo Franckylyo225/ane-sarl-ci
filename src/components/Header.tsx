@@ -61,9 +61,9 @@ export function Header() {
       <div className="hidden lg:block bg-primary text-primary-foreground py-2">
         <div className="container-custom flex items-center justify-between text-sm">
           <div className="flex items-center gap-6">
-            <a href="tel:+22527222831 15" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <a href="tel:+2250768853120" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Phone size={14} />
-              <span>+225 27 22 28 31 15</span>
+              <span>+225 07 68 85 31 20</span>
             </a>
             <a href="mailto:info@ane.ci" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Mail size={14} />
