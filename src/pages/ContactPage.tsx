@@ -22,7 +22,7 @@ const contactInfo = [
   {
     icon: Phone,
     title: "Téléphone",
-    content: "+225 27 22 28 31 15",
+    content: "+225 07 68 08 71 01",
     detail: "Du lundi au vendredi",
   },
   {
