@@ -153,7 +153,7 @@ export default function ArticleDetailPage() {
               </span>
               <span className="flex items-center gap-2">
                 <User className="w-5 h-5" />
-                ANE Gabon
+                Service Communication
               </span>
             </div>
 
